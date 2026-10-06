@@ -6,6 +6,13 @@ delivery-partner apps + an EJS admin panel) with an Express/MongoDB backend (`Ea
 The existing admin panel is server-rendered EJS; this repo rebuilds the **Delivery agents** feature
 in Next.js so the same `/api/admin/delivery-agents` endpoints get a modern, responsive, token-based UI.
 
+## Links
+
+- Demo (Vercel, mock data): https://easy-admin-frontend.vercel.app/delivery-agents/list
+- Frontend repo: https://github.com/Neeraj-gurjar-1112/easy-admin-frontend (`main`)
+- Backend: Easy-Backend-v2 (`master`) — delivery-agents module, seed and tests; run locally as described below
+- Design: _Claude Design link_
+
 ## What I built
 
 **HW1 — list screen** (`/delivery-agents/list`), every WM width from 1920 to 375:
