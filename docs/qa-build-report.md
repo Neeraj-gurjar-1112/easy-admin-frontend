@@ -6,9 +6,9 @@ Format: WM | Report (10 parts from training Step 8). Written as a hand-over to Q
 
 | | |
 |---|---|
-| Frontend repo / branch | `easy-admin-frontend` · `main` · commit: _fill after commit_ |
+| Frontend repo / branch | https://github.com/Neeraj-gurjar-1112/easy-admin-frontend · `main` · commit `4de4a43` (+ this docs commit) |
 | Backend repo / branch | `Easy-Backend-v2` · `master` (working tree, delivery-agents module + seed + test) · commit: _fill after commit_ |
-| Demo | Frontend: _Vercel URL_ · Backend: local `http://localhost:8080` (see part 6) |
+| Demo | Frontend: https://easy-admin-frontend.vercel.app (mock data; no public API URL configured) · Backend: local `http://localhost:8080` (see part 6) |
 | Date | 2026-10-06 |
 
 ## 2. TL tasks covered
