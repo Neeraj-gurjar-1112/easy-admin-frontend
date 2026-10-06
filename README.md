@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Easy Admin — Delivery agents (AI Frontend Training homework, HW1 + HW2)
 
-## Getting Started
+Next.js + PrimeReact rebuild of one page of the Easy admin panel, following the WM frontend rules.
+Easy is my own project: a hyperlocal grocery + food delivery service (customer, seller and
+delivery-partner apps + an EJS admin panel) with an Express/MongoDB backend (`Easy-Backend-v2`).
+The existing admin panel is server-rendered EJS; this repo rebuilds the **Delivery agents** feature
+in Next.js so the same `/api/admin/delivery-agents` endpoints get a modern, responsive, token-based UI.
 
-First, run the development server:
+## What I built
+
+**HW1 — list screen** (`/delivery-agents/list`), every WM width from 1920 to 375:
+
+- Admin shell: dark sidebar (only the pages that exist — one feature, one entry; drawer below 1024px), top bar with light/dark toggle and sign-out
+- 4 KPI tiles: total agents · pending approval · online now · average rating
+- Search (name / phone / email, debounced) + filters: vehicle type, approval, presence; Reset
+- Sortable table: agent (avatar + name + id), contact, vehicle, approval, presence, assigned, completed, rating, joined, actions
+- Loading (skeleton tiles + rows), empty (two variants), error (API message + retry), filled; pagination with page size
+- WM formats: `YYYY-MM-DD` dates, three-digit comma numbers, `₹` without decimals
+- Design tokens: Easy palette as `$blue-b1`-style SCSS variables, `[day]`/`[night]` 1:1 → CSS custom properties
+
+**HW2 — full feature on the real API:**
+
+- Login (`/login`, `POST /api/admin/login`, JWT in localStorage, Bearer on every request, 401 → back to login)
+- Create (`/delivery-agents/create`), details (`/delivery-agents/details/[id]` with profile, performance, recent orders),
+  edit (`/delivery-agents/edit/[id]`), approve / suspend / delete with confirm dialogs, toasts that survive navigation
+- Validation identical to the backend (Joi + Mongoose rules written once in `AGENT_RULES`); server field errors land under the right input
+- Service + hook pattern: `api-integration.ts` → `DeliveryAgentService` → `useGetDeliveryAgentList` / `Details` / `Mutations` (TanStack Query, list + summary invalidated after every mutation)
+- Playwright: `auth.setup.ts` (one login, saved session), `delivery-agents.spec.ts` (read-only), `delivery-agents.mutation.spec.ts` (create → list → edit → approve → delete, `@mutation`), `responsive.spec.ts` (4 screens × 10 widths)
+- Backend additions in Easy-Backend-v2 (same repo as the rest of Easy): list filters (`q`, `vehicle_type`, `approval`, `presence`, `sort`, `order`) + `summary`,
+  `GET /delivery-agents/summary`, `POST /delivery-agents` with Joi validation, whitelisted `PATCH` that re-hashes a new password,
+  `scripts/seed-delivery-agents.js`, `tests/admin_delivery_agents_v2.test.js` (12 tests)
+
+Docs: `docs/test-cases.md` (WM QA format) · `docs/qa-build-report.md` (hand-over) · `docs/design-check.md` · `docs/wm-rules.md`
+
+## How to run
+
+**Backend** (Easy-Backend-v2, Node 20+, local MongoDB on 27017):
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cd D:\Easy-Backend-v2
+npm install
+node scripts/seed-delivery-agents.js     # 32 agents + admin admin@example.com / Admin@123 (local seed only)
+npm run dev                              # http://localhost:8080  — admin API at /api/admin
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Frontend** (this repo):
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install                        # postinstall copies the PrimeReact light/dark themes into public/themes
+cp .env.local.example .env.local   # NEXT_PUBLIC_API_BASE_URL=http://localhost:8080/api/admin, NEXT_PUBLIC_USE_MOCK=0
+npm run dev                        # http://localhost:3000 → /login → /delivery-agents/list
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+`NEXT_PUBLIC_USE_MOCK=1` (or no API URL) switches the service to the in-memory mock used for the HW1 demo; nothing else changes.
 
-## Learn More
+## Checks
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run type-check
+npm run lint
+npm run build
+npm run test:e2e              # login setup + read-only specs + responsive screenshots (backend must be running)
+npm run test:e2e:mutations    # create / edit / delete spec — local backend only
+npm run shots                 # responsive spec alone → ./screenshots
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## How the data layer works
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+src/utils/api-integration.ts               endpoint paths + query keys
+src/api-services/CoreAPIService.ts         axios: base URL, Bearer token, error folding ({error} | {error,details[]} | {success,message}), 401 → /login
+src/api-services/DeliveryAgentService.ts   one method per endpoint — or src/mocks/… behind the same interface
+src/hooks/API/delivery-agents/             useGetDeliveryAgentList / useGetDeliveryAgentDetails / useDeliveryAgentMutations
+src/components/delivery-agents/            AgentStats, AgentFilters, AgentTable, AgentForm, AgentBadges, useAgentActions
+src/app/(main)/delivery-agents/            list / create / details/[id] / edit/[id]   (screens: useState for UI state, hooks for data)
+```
 
-## Deploy on Vercel
+## Prompts and skills I used
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+See the Notion homework page (section 4 / 7) and `docs/session-prompts.md` — verbatim, Hinglish included.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Problems I hit and how I solved them
+
+- **Wrong first topic.** Started with a generic "Branch Directory" on a throw-away API; not something to show as a full-stack developer. Switched to my own Easy project. Because the data layer was behind one interface with a mock implementing the same contract, the pivot only replaced types, mock and page.
+- **PrimeReact 10.2.1 + React 19**: peer dependency conflict → `--legacy-peer-deps`; the `invalid` prop does not exist in 10.2 → `className="p-invalid"`.
+- **Easy's legacy list endpoint had no search/filters** and `PATCH` wrote `req.body` straight into `$set` (a plain-text password would have been stored). Added Joi schemas, a whitelist and `save()` so the pre-save hook hashes it; covered by the new backend tests.
+- **A bare Mongo URI landed in the `test` database.** `DB_CONNECTION_STRING` had no database path and `DB_NAME` was ignored; `lib/db/mongoose.js` now honours `DB_NAME` when the URI has none, and the seed uses the same resolution.
+- Stale `.next/types` after deleting a route made `tsc` fail → `rm -rf .next`; Playwright 1.63 needed a new Chromium build.

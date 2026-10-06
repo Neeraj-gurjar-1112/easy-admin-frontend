@@ -1,0 +1,74 @@
+import { test, expect, type Page } from "@playwright/test";
+
+// Step 5 (responsive) — the "repeatable" way from the training page.
+// For every WM width and every screen: open it, wait until its content is on screen, save a
+// full-page screenshot into ./screenshots, and fail if the document is wider than the viewport
+// (= sideways scrolling).  Run: npm run shots
+
+const WM_WIDTHS = [1920, 1600, 1366, 1280, 1024, 991, 768, 640, 480, 375];
+const VIEWPORT_HEIGHT = 900;
+
+/** Click "View" on the first row and wait for the details page. Retries once if the click landed before hydration. */
+const openFirstRowDetails = async (page: Page) => {
+  await expect(async () => {
+    await page.locator(".p-datatable-tbody tr").first().getByRole("button", { name: /^View/ }).click();
+    await expect(page).toHaveURL(/\/delivery-agents\/details\//, { timeout: 4_000 });
+  }).toPass({ timeout: 20_000 });
+};
+
+interface Screen {
+  name: string;
+  open: (page: Page) => Promise<void>;
+}
+
+const SCREENS: Screen[] = [
+  {
+    name: "delivery-agents-list",
+    open: async (page) => {
+      await page.goto("/delivery-agents/list");
+      await page.locator(".p-datatable-tbody tr").first().waitFor({ state: "visible" });
+    },
+  },
+  {
+    name: "delivery-agents-details",
+    open: async (page) => {
+      await page.goto("/delivery-agents/list");
+      await page.locator(".p-datatable-tbody tr").first().waitFor({ state: "visible" });
+      await openFirstRowDetails(page);
+      await page.locator(".agent-hero").waitFor({ state: "visible" });
+    },
+  },
+  {
+    name: "delivery-agents-create",
+    open: async (page) => {
+      await page.goto("/delivery-agents/create");
+      await page.locator(".form-card").waitFor({ state: "visible" });
+    },
+  },
+  {
+    name: "login",
+    open: async (page) => {
+      await page.goto("/login");
+      await page.locator(".login-card").waitFor({ state: "visible" });
+    },
+  },
+];
+
+async function assertNoHorizontalScroll(page: Page, width: number) {
+  const size = await page.evaluate(() => ({
+    scrollWidth: document.documentElement.scrollWidth,
+    clientWidth: document.documentElement.clientWidth,
+  }));
+  expect(size.scrollWidth, `page is ${size.scrollWidth}px wide in a ${width}px viewport`).toBeLessThanOrEqual(size.clientWidth);
+}
+
+for (const screen of SCREENS) {
+  for (const width of WM_WIDTHS) {
+    test(`${screen.name} @ ${width}px — no horizontal scroll`, async ({ page }) => {
+      await page.setViewportSize({ width, height: VIEWPORT_HEIGHT });
+      await screen.open(page);
+      await page.screenshot({ path: `screenshots/${screen.name}-${width}.png`, fullPage: true });
+      await assertNoHorizontalScroll(page, width);
+    });
+  }
+}

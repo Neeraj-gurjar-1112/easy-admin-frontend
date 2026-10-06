@@ -1,0 +1,50 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+// ---- Filter bar: search + dropdown filters, wraps and stacks on small screens -----------
+.filter-bar {
+  @include surface;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-4;
+}
+
+// Each control grows to share the row; below tablet every control is full width
+.filter-bar-item {
+  flex: 1 1 $filter-min-width;
+  min-width: $filter-min-width;
+
+  .p-dropdown,
+  .p-inputtext,
+  .p-calendar {
+    width: 100%;
+  }
+
+  @include below('sm') {
+    flex-basis: 100%;
+  }
+}
+
+// The search box gets more room than a dropdown
+.filter-bar-item-search {
+  flex: 2 1 $search-min-width;
+}
+
+// Trailing actions (reset, export) stay on the right on wide screens
+.filter-bar-end {
+  display: flex;
+  gap: $space-2;
+  margin-left: auto;
+
+  @include below('sm') {
+    width: 100%;
+    margin-left: 0;
+
+    .p-button {
+      flex: 1 1 auto;
+      justify-content: center;
+    }
+  }
+}

@@ -1,0 +1,72 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+// ---- Table card: the table scrolls INSIDE this box, the page never scrolls sideways -----
+.table-card {
+  @include surface;
+  overflow: hidden;
+}
+
+.table-scroll-box {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  // Keep columns readable; below this width the box scrolls horizontally
+  .p-datatable-table {
+    min-width: $table-min-width;
+  }
+}
+
+// PrimeReact DataTable tokens — colours from the palette only
+.p-datatable {
+  .p-datatable-thead > tr > th {
+    background: var(--grey-b5);
+    color: var(--grey-b2);
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    border-color: var(--grey-b4);
+    padding: $space-3 $space-4;
+    white-space: nowrap;
+  }
+
+  .p-datatable-tbody > tr {
+    background: var(--grey-b7);
+    color: var(--grey-b1);
+    transition: background $transition-fast;
+
+    > td {
+      padding: $space-3 $space-4;
+      border-color: var(--grey-b4);
+      font-size: $font-size-sm;
+    }
+
+    &:hover {
+      background: var(--grey-b5);
+    }
+  }
+}
+
+// Cell helpers
+.cell-primary {
+  font-weight: $font-weight-semibold;
+  color: var(--grey-b1);
+}
+
+.cell-secondary {
+  color: var(--grey-b2);
+  font-size: $font-size-xs;
+}
+
+.cell-number {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.cell-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $space-1;
+}

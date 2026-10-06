@@ -1,0 +1,16 @@
+@use 'variables' as *;
+
+// ---- Search input: text field with a leading search icon ------------------------------
+.search-input {
+  display: block;
+  width: 100%;
+
+  .p-inputtext {
+    width: 100%;
+    min-height: $touch-target;
+  }
+
+  .pi {
+    color: var(--grey-b3);
+  }
+}

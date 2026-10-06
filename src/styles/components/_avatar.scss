@@ -1,0 +1,45 @@
+@use 'variables' as *;
+
+// ---- Avatar: initials circle, six tones picked by a stable hash of the name --------------
+.avatar {
+  flex: 0 0 $avatar-size;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: $avatar-size;
+  height: $avatar-size;
+  border-radius: $radius-pill;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.02em;
+}
+
+.avatar-tone-1 {
+  color: var(--blue-b1);
+  background: var(--blue-b3);
+}
+
+.avatar-tone-2 {
+  color: var(--green-b1);
+  background: var(--green-b2);
+}
+
+.avatar-tone-3 {
+  color: var(--yellow-b1);
+  background: var(--yellow-b2);
+}
+
+.avatar-tone-4 {
+  color: var(--red-b1);
+  background: var(--red-b2);
+}
+
+.avatar-tone-5 {
+  color: var(--cyan-b1);
+  background: var(--cyan-b2);
+}
+
+.avatar-tone-6 {
+  color: var(--slate-b1);
+  background: var(--slate-b2);
+}

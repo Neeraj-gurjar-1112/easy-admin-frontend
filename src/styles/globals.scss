@@ -1,0 +1,109 @@
+@use 'sass:list';
+@use 'variables' as *;
+@use 'mixins' as *;
+
+// Component and page partials (one file per block, WM folder rule)
+@use 'components/app-shell';
+@use 'components/page-header';
+@use 'components/filter-bar';
+@use 'components/search-input';
+@use 'components/status-badge';
+@use 'components/stat-tile';
+@use 'components/avatar';
+@use 'components/state-wrapper';
+@use 'components/data-table';
+@use 'components/list-pagination';
+@use 'components/form';
+@use 'pages/login';
+@use 'pages/delivery-agents';
+
+// ---- Colour custom properties: [day] on :root, [night] on [data-theme='dark'] ---------
+// Generated from $palette so the two modes can never drift apart (1:1 rule).
+:root {
+  @each $name, $pair in $palette {
+    --#{$name}: #{list.nth($pair, 1)};
+  }
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  @each $name, $pair in $palette {
+    --#{$name}: #{list.nth($pair, 2)};
+  }
+  color-scheme: dark;
+}
+
+// ---- Base ------------------------------------------------------------------------------
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  // The page itself never scrolls sideways; wide blocks scroll inside their own box.
+  overflow-x: hidden;
+}
+
+body {
+  font-family: $font-family-base;
+  font-size: $font-size-sm;
+  line-height: $line-height-base;
+  color: var(--grey-b1);
+  background: var(--grey-b6);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--blue-b1);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+// Screen-reader-only text (labels for icon buttons)
+.sr-only {
+  @include visually-hidden;
+}
+
+// ---- PrimeReact adjustments (tokens only, no new colours) -----------------------------
+.p-component {
+  font-family: $font-family-base;
+}
+
+// Buttons take their width from padding (WM); phones get a comfortable tap target
+.p-button {
+  min-height: $touch-target;
+  padding-inline: $space-4;
+
+  &.p-button-icon-only {
+    width: $touch-target;
+    padding-inline: 0;
+  }
+}
+
+// When a button is stretched to full width (phone action rows), keep icon and label together
+.page-header-actions,
+.agent-hero-actions,
+.form-actions,
+.filter-bar-end,
+.state-box-action {
+  .p-button .p-button-label {
+    flex: 0 1 auto;
+  }
+}
+
+.p-dropdown,
+.p-inputtext {
+  min-height: $touch-target;
+}

@@ -39,3 +39,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# keep the env example, ignore real env files (already ignored above)
+!.env.local.example
+
+# generated at install (scripts/copy-primereact-themes.mjs)
+/public/themes/
+
+# playwright
+/playwright-report/
+/test-results/
+/screenshots/
+/e2e/.auth/

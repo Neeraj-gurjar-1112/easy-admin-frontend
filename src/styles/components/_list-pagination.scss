@@ -1,0 +1,58 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+// ---- List footer: total count on the left, paginator on the right -----------------------
+.list-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-3;
+  padding: $space-3 $space-4;
+  border-top: $border-width solid var(--grey-b4);
+  background: var(--grey-b7);
+
+  .p-paginator {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  // Paginator buttons stay tappable on phones
+  .p-paginator-page,
+  .p-paginator-first,
+  .p-paginator-prev,
+  .p-paginator-next,
+  .p-paginator-last {
+    min-width: $touch-target;
+    height: $touch-target;
+  }
+
+  @include below('sm') {
+    flex-direction: column;
+    align-items: stretch;
+
+    .p-paginator {
+      justify-content: center;
+    }
+  }
+
+  // First / last jump buttons are noise on a phone; prev / next + page numbers are enough
+  @include below('xs') {
+    .p-paginator-first,
+    .p-paginator-last {
+      display: none;
+    }
+  }
+}
+
+.list-pagination-total {
+  font-size: $font-size-sm;
+  color: var(--grey-b2);
+  white-space: nowrap;
+
+  strong {
+    color: var(--grey-b1);
+  }
+}

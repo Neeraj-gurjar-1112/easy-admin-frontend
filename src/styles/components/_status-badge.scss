@@ -1,0 +1,56 @@
+@use 'variables' as *;
+
+// ---- Status badge: pill, one text/background pair per tone -----------------------------
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  padding: $space-1 $space-2;
+  border-radius: $radius-pill;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-base;
+  white-space: nowrap;
+}
+
+.status-badge-icon {
+  font-size: $font-size-xs;
+}
+
+// Presence dot takes the badge's text colour
+.status-badge-dot {
+  width: $space-2;
+  height: $space-2;
+  border-radius: $radius-pill;
+  background: currentColor;
+}
+
+.status-badge-success {
+  color: var(--green-b1);
+  background: var(--green-b2);
+}
+
+.status-badge-warning {
+  color: var(--yellow-b1);
+  background: var(--yellow-b2);
+}
+
+.status-badge-danger {
+  color: var(--red-b1);
+  background: var(--red-b2);
+}
+
+.status-badge-info {
+  color: var(--cyan-b1);
+  background: var(--cyan-b2);
+}
+
+.status-badge-neutral {
+  color: var(--slate-b1);
+  background: var(--slate-b2);
+}
+
+.status-badge-primary {
+  color: var(--blue-b1);
+  background: var(--blue-b3);
+}

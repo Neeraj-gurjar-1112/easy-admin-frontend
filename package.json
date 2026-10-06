@@ -1,25 +1,46 @@
 {
-  "name": "branch-directory-frontend",
+  "name": "easy-admin-frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "type-check": "tsc --noEmit",
+    "postinstall": "node scripts/copy-primereact-themes.mjs",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:report": "playwright show-report",
+    "test:e2e:mutations": "cross-env E2E_ALLOW_MUTATIONS=1 playwright test --grep @mutation",
+    "shots": "playwright test e2e/responsive.spec.ts"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.104.1",
+    "axios": "^1.20.0",
+    "dayjs": "^1.11.23",
+    "next": "15.5.27",
+    "primeflex": "^3.3.0",
+    "primeicons": "^6.0.1",
+    "primereact": "^10.2.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "next": "15.5.27"
+    "react-hook-form": "^7.89.0",
+    "sass": "^1.105.1"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@playwright/test": "^1.63.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "15.5.27",
-    "@eslint/eslintrc": "^3"
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

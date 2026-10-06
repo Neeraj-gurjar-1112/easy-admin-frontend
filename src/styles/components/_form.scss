@@ -1,0 +1,124 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+// ---- Forms (create / edit / login): card, 2-column grid, field, error, switches, actions ----
+.form-card {
+  @include surface;
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+  padding: $space-6;
+
+  @include below('sm') {
+    gap: $space-4;
+    padding: $space-4;
+  }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $space-4 $space-6;
+
+  @include below('sm') {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+  min-width: 0;
+
+  .p-inputtext,
+  .p-dropdown {
+    width: 100%;
+  }
+}
+
+.form-label {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: var(--grey-b2);
+}
+
+.form-required {
+  color: var(--red-b1);
+}
+
+.form-error {
+  font-size: $font-size-xs;
+  color: var(--red-b1);
+}
+
+.form-hint {
+  font-size: $font-size-xs;
+  color: var(--grey-b3);
+}
+
+// PrimeReact Message used as the server-error banner
+.form-message.p-message {
+  width: 100%;
+  margin: 0;
+}
+
+// Account flag switches: 3 → 1 columns
+.form-switches {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: $space-4;
+
+  @include below('ml') {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.form-switch-row {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-3;
+  padding: $space-3 $space-4;
+  border: $border-width solid var(--grey-b4);
+  border-radius: $radius-md;
+  cursor: pointer;
+
+  > span {
+    display: flex;
+    flex-direction: column;
+    gap: $space-1;
+    min-width: 0;
+  }
+
+  strong {
+    font-size: $font-size-sm;
+    color: var(--grey-b1);
+  }
+
+  small {
+    font-size: $font-size-xs;
+    color: var(--grey-b3);
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $space-2;
+
+  @include below('xs-sm') {
+    flex-direction: column-reverse;
+
+    .p-button {
+      justify-content: center;
+    }
+  }
+}
+
+// Loading placeholders for a form / a details hero
+.form-skeleton,
+.hero-skeleton {
+  width: 100%;
+  height: $space-16 * 4;
+  border-radius: $radius-lg;
+}

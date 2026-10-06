@@ -1,0 +1,69 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+// ---- Empty / error states: centred icon, title, description, optional action ----------
+.state-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  padding: $space-12 $space-4;
+  text-align: center;
+
+  @include below('sm') {
+    padding: $space-8 $space-4;
+  }
+}
+
+.state-box-icon {
+  font-size: $icon-size-lg;
+  color: var(--grey-b3);
+}
+
+.state-box-error .state-box-icon {
+  color: var(--red-b1);
+}
+
+.state-box-title {
+  margin: 0;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: var(--grey-b1);
+}
+
+.state-box-description {
+  margin: 0;
+  max-width: 48ch;
+  font-size: $font-size-sm;
+  color: var(--grey-b2);
+}
+
+.state-box-action {
+  margin-top: $space-3;
+}
+
+// ---- Loading skeleton: one grid row per table row --------------------------------------
+.table-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  padding: $space-4;
+}
+
+.table-skeleton-row {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: $space-4;
+
+  // Fewer visible skeleton columns on phones so the row never overflows
+  @include below('sm') {
+    grid-auto-columns: minmax(0, 1fr);
+    gap: $space-2;
+  }
+}
+
+.table-skeleton-cell {
+  height: $skeleton-row-height;
+}

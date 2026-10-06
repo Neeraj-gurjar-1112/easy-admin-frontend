@@ -1,0 +1,52 @@
+@use 'sass:map';
+@use 'variables' as *;
+
+// Max-width media query for a WM breakpoint key.
+// @include below('sm') { ... }  →  @media (max-width: 767px) { ... }
+@mixin below($key) {
+  $bp: map.get($breakpoints, $key);
+  @if $bp == null {
+    @error "Unknown breakpoint `#{$key}`. Use one of: #{map.keys($breakpoints)}";
+  }
+  @media (max-width: ($bp - 1px)) {
+    @content;
+  }
+}
+
+// Min-width counterpart.
+// @include from('lg') { ... }  →  @media (min-width: 1366px) { ... }
+@mixin from($key) {
+  $bp: map.get($breakpoints, $key);
+  @if $bp == null {
+    @error "Unknown breakpoint `#{$key}`. Use one of: #{map.keys($breakpoints)}";
+  }
+  @media (min-width: $bp) {
+    @content;
+  }
+}
+
+// Card surface used by every content block.
+@mixin surface {
+  background: var(--grey-b7);
+  border: $border-width solid var(--grey-b4);
+  border-radius: $radius-lg;
+  box-shadow: $shadow-b1;
+}
+
+// Keeps text on one line and cuts it with an ellipsis.
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Hides an element visually but keeps it for screen readers.
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
