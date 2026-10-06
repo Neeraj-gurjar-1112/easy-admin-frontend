@@ -46,7 +46,7 @@ npm run dev                              # http://localhost:8080  — admin API 
 **Frontend** (this repo):
 
 ```bash
-npm install                        # postinstall copies the PrimeReact light/dark themes into public/themes
+npm install                        # .npmrc sets legacy-peer-deps (PrimeReact 10.2 + React 19); postinstall copies the PrimeReact themes into public/themes
 cp .env.local.example .env.local   # NEXT_PUBLIC_API_BASE_URL=http://localhost:8080/api/admin, NEXT_PUBLIC_USE_MOCK=0
 npm run dev                        # http://localhost:3000 → /login → /delivery-agents/list
 ```
