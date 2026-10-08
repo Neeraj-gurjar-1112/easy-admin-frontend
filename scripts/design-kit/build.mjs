@@ -446,7 +446,7 @@ function listScreen(W, state = "filled") {
   return { W, H: finalH, svg: [shell(W, finalH, { sidebar: mode === "desktop" }).svg, ...parts] };
 }
 
-function formScreen(W, { mode = "create", W2 } = {}) {
+function formScreen(W, { mode = "create" } = {}) {
   const phone = W < 768;
   const H = phone ? 1260 : 820;
   const sh = shell(W, H, { sidebar: W >= 1024 });
