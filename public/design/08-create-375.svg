@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="375" height="1260" viewBox="0 0 375 1260" font-family="Inter, Arial, sans-serif">
+<title>08-create-375</title>
+<rect x="0" y="0" width="375" height="1260" rx="0" fill="#f3f5f9"/>
+<rect x="0" y="0" width="375" height="56" rx="0" fill="#ffffff"/>
+<line x1="0" y1="56" x2="375" y2="56" stroke="#e3e8ef" stroke-width="1" stroke-linecap="round"/>
+<line x1="18" y1="22" x2="34" y2="22" stroke="#475569" stroke-width="2" stroke-linecap="round"/>
+<line x1="18" y1="28" x2="34" y2="28" stroke="#475569" stroke-width="2" stroke-linecap="round"/>
+<line x1="18" y1="34" x2="34" y2="34" stroke="#475569" stroke-width="2" stroke-linecap="round"/>
+<text x="56" y="28.5" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" fill="#475569" text-anchor="start" dominant-baseline="middle">Admin panel</text>
+<circle cx="347" cy="28" r="16" fill="#f8fafc"/>
+<circle cx="347" cy="25" r="4" fill="#475569"/>
+<rect x="340" y="31" width="14" height="6" rx="3" fill="#475569"/>
+<path d="M309 20a8 8 0 1 0 6 12a7 7 0 0 1-6-12z" fill="#2563eb"/>
+<text x="16" y="86" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700" fill="#0f172a" text-anchor="start" dominant-baseline="middle">Add delivery agent</text>
+<text x="16" y="112" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#475569" text-anchor="start" dominant-baseline="middle">Create an account for a new delivery</text>
+<text x="16" y="132" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#475569" text-anchor="start" dominant-baseline="middle">partner. They sign in to the partner app</text>
+<text x="16" y="152" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#475569" text-anchor="start" dominant-baseline="middle">with this email and password.</text>
+<rect x="16" y="180" width="343" height="44" rx="7" fill="none"/>
+<line x1="134" y1="202" x2="146" y2="202" stroke="#2563eb" stroke-width="2" stroke-linecap="round"/>
+<polyline points="139,197 134,202 139,207" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="154" y="202.5" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" fill="#2563eb" text-anchor="start" dominant-baseline="middle">Back to list</text>
+<rect x="16" y="240" width="343" height="954" rx="12" fill="#ffffff" stroke="#e3e8ef" stroke-width="1"/>
+<text x="32" y="264" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="500" fill="#475569" text-anchor="start" dominant-baseline="middle">Full name</text>
+<text x="105" y="264" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#b91c1c" text-anchor="start" dominant-baseline="middle">*</text>
+<rect x="32" y="280" width="311" height="44" rx="7" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+<text x="44" y="302.5" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#64748b" text-anchor="start" dominant-baseline="middle"></text>
+<text x="32" y="358" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="500" fill="#475569" text-anchor="start" dominant-baseline="middle">Email</text>
+<text x="75" y="358" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#b91c1c" text-anchor="start" dominant-baseline="middle">*</text>
+<rect x="32" y="374" width="311" height="44" rx="7" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+<text x="44" y="396.5" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#64748b" text-anchor="start" dominant-baseline="middle"></text>
+<text x="32" y="452" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="500" fill="#475569" text-anchor="start" dominant-baseline="middle">Phone</text>
+<text x="75" y="452" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#b91c1c" text-anchor="start" dominant-baseline="middle">*</text>
+<rect x="32" y="468" width="311" height="44" rx="7" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+<text x="44" y="490.5" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#64748b" text-anchor="start" dominant-baseline="middle">+91 98765 43210</text>
+<text x="32" y="546" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="500" fill="#475569" text-anchor="start" dominant-baseline="middle">Vehicle</text>
+<text x="90" y="546" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#b91c1c" text-anchor="start" dominant-baseline="middle">*</text>
+<rect x="32" y="562" width="311" height="44" rx="7" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+<text x="44" y="584.5" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#0f172a" text-anchor="start" dominant-baseline="middle">Bike</text>
+<polyline points="319,581 325,587 331,581" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="32" y="640" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="500" fill="#475569" text-anchor="start" dominant-baseline="middle">License number</text>
+<rect x="32" y="656" width="311" height="44" rx="7" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+<text x="44" y="678.5" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#64748b" text-anchor="start" dominant-baseline="middle">MH12 20250001</text>
+<text x="32" y="734" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="500" fill="#475569" text-anchor="start" dominant-baseline="middle">Password</text>
+<text x="97" y="734" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#b91c1c" text-anchor="start" dominant-baseline="middle">*</text>
+<rect x="32" y="750" width="311" height="44" rx="7" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+<text x="44" y="772.5" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#64748b" text-anchor="start" dominant-baseline="middle"></text>
+<text x="32" y="806" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400" fill="#64748b" text-anchor="start" dominant-baseline="middle">Used by the agent in the partner app. 8–72 characters.</text>
+<rect x="32" y="840" width="311" height="76" rx="10" fill="#ffffff" stroke="#e3e8ef" stroke-width="1"/>
+<rect x="48" y="860" width="44" height="24" rx="999" fill="#cbd5e1"/>
+<circle cx="60" cy="872" r="9" fill="#ffffff"/>
+<text x="104" y="866" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" fill="#0f172a" text-anchor="start" dominant-baseline="middle">Approved</text>
+<text x="104" y="886" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400" fill="#64748b" text-anchor="start" dominant-baseline="middle">Can accept orders. Pending agents</text>
+<text x="104" y="902" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400" fill="#64748b" text-anchor="start" dominant-baseline="middle">only see the waiting screen.</text>
+<rect x="32" y="932" width="311" height="76" rx="10" fill="#ffffff" stroke="#e3e8ef" stroke-width="1"/>
+<rect x="48" y="952" width="44" height="24" rx="999" fill="#2563eb"/>
+<circle cx="80" cy="964" r="9" fill="#ffffff"/>
+<text x="104" y="958" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" fill="#0f172a" text-anchor="start" dominant-baseline="middle">Active account</text>
+<text x="104" y="978" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400" fill="#64748b" text-anchor="start" dominant-baseline="middle">Off = suspended; the agent cannot</text>
+<text x="104" y="994" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400" fill="#64748b" text-anchor="start" dominant-baseline="middle">go online.</text>
+<rect x="32" y="1024" width="311" height="76" rx="10" fill="#ffffff" stroke="#e3e8ef" stroke-width="1"/>
+<rect x="48" y="1044" width="44" height="24" rx="999" fill="#2563eb"/>
+<circle cx="80" cy="1056" r="9" fill="#ffffff"/>
+<text x="104" y="1050" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" fill="#0f172a" text-anchor="start" dominant-baseline="middle">Available for new orders</text>
+<text x="104" y="1070" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400" fill="#64748b" text-anchor="start" dominant-baseline="middle">Off while the agent is on a</text>
+<text x="104" y="1086" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400" fill="#64748b" text-anchor="start" dominant-baseline="middle">delivery.</text>
+<rect x="32" y="1082" width="311" height="44" rx="7" fill="#2563eb" stroke="#2563eb" stroke-width="1"/>
+<polyline points="134,1105 138,1109 146,1100" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="154" y="1104.5" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" fill="#ffffff" text-anchor="start" dominant-baseline="middle">Create agent</text>
+<rect x="32" y="1134" width="311" height="44" rx="7" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+<text x="165" y="1156.5" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" fill="#475569" text-anchor="start" dominant-baseline="middle">Cancel</text>
+</svg>
