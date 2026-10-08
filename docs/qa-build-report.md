@@ -6,7 +6,7 @@ Format: WM | Report (10 parts from training Step 8). Written as a hand-over to Q
 
 | | |
 |---|---|
-| Frontend repo / branch | https://github.com/Neeraj-gurjar-1112/easy-admin-frontend · `main` · latest commit on main (see GitHub) |
+| Frontend repo / branch | https://github.com/Neeraj-gurjar-1112/easy-admin-frontend · `main` · **code under test: commit `ec4f7a6`** (the deployed build is the commit right after it on `main`, which adds only this report, the test cases, screenshots and the HTML reports) |
 | Backend repo / branch | https://github.com/Neeraj-gurjar-1112/Easy-Backend-v2 · `master` · commit `b71b508` (delivery-agents module, seed, tests, render.yaml) |
 | Demo | Frontend: https://easy-admin-frontend.vercel.app (demo mode: in-browser data, survives reload, "Reset demo data" in the top bar; no login needed) · Backend for the real-API flow: local `http://localhost:8080` (see part 6) |
 | Date | 2026-10-08 |
@@ -68,7 +68,7 @@ npm run dev                                # http://localhost:3000
 ```
 
 Expected starting state: 32 agents · 5 pending · 18 online · 7 busy · 7 offline · average rating 4.5.
-Mutation tests create and delete their own agent (`e2e.<stamp>@example.com`).
+Mutation tests create and delete their own agent (`e2e.<stamp>@example.com`). They may run against the hosted demo API (in-memory database, reseeded on every restart) — never against a real production server.
 
 ## 7. What to test (numbered)
 
@@ -79,21 +79,21 @@ Mutation tests create and delete their own agent (`e2e.<stamp>@example.com`).
 5. View (eye icon) → details: profile, performance tiles, recent orders ("No deliveries yet" for seeded agents).
 6. Add agent → submit empty → 4 required messages; wrong formats → backend rules shown; valid data → details page + toast, list shows the new agent as Pending.
 7. Create again with the same email → "Email is already registered" under Email, typed values kept.
-8. Edit → change name → Save → details shows new name + toast; list shows new name.
-9. Approve on details → badge Approved; Suspend on list row → confirm dialog → badges Pending + Offline.
-10. Delete on list row → confirm dialog → toast → agent gone from search; Total decreases.
+8. Edit → change name → Save → details shows new name + toast; list shows new name. Then Edit again → clear the name → Save → "Name is required"; phone `12345` → Save → "Phone must contain at least 10 digits"; nothing is saved, the form stays open.
+9. Approve on details → badge Approved; Suspend on list row → confirm dialog → badges Pending + Offline. Cancel on the suspend dialog → nothing changes.
+10. Delete on list row → confirm dialog → Cancel → row stays, Total unchanged; Delete again → confirm → toast → agent gone from search; Total decreases.
 11. Sign out → redirected to login; opening `/delivery-agents/list` directly → login with `?next=`.
-12. Stop the backend → list shows "Could not load data" with the connection message → start backend → Try again loads rows.
+12. Stop the backend → list shows "Could not load data" with the connection message; submitting a valid create or edit form shows the same message in the form banner and keeps the typed values → start backend → Try again loads rows, submit works. Opening `/delivery-agents/details/<unknown id>` or `/edit/<unknown id>` shows "Delivery agent not found" with Try again.
 13. Resize 1920 → 375: sidebar becomes a drawer below 1024, tiles 4→2→1, filters and form stack, table scrolls inside its card, no page-level horizontal scroll.
 14. Toggle dark mode → every surface switches; reload keeps the choice.
 
-Full case list with IDs: `docs/test-cases.md` (46 cases: 34 positive, 12 negative).
+Full case list with IDs: `docs/test-cases.md` (51 cases: 34 positive, 17 negative).
 
 ## 8. Known issues and what is not covered
 
 - **Single admin role.** Easy's admin API has one role; "other roles cannot open the page" is covered only by the unauthenticated redirect and the API's 401.
 - **Recent orders** are empty for seeded agents (no seeded orders). The table renders with real data from `GET /delivery-agents/:id`.
-- **Deployed demo** of the frontend runs on the in-memory mock unless a public backend URL is configured (`NEXT_PUBLIC_API_BASE_URL`, `NEXT_PUBLIC_USE_MOCK=0`) — the backend is local in this hand-over.
+- **Deployed demo** of the frontend runs on the in-memory mock until the backend is hosted. The backend repo ships `render.yaml` (in-memory database + seed on boot, no external services); once it is up, the switch is two Vercel variables (`NEXT_PUBLIC_API_BASE_URL`, `NEXT_PUBLIC_USE_MOCK=0`) and a redeploy, and the Playwright suites run against the hosted URL with `PLAYWRIGHT_BASE_URL`.
 - **Backend test suite** (`npm test` in Easy-Backend-v2) is red for pre-existing reasons documented in `docs/TEST-STATUS.md`; the new `admin_delivery_agents_v2.test.js` file passes on its own.
 - Not covered: concurrent edits, file uploads (none on this entity), Flutter partner app behaviour after admin changes.
 
@@ -104,8 +104,8 @@ Frontend
   npm run type-check     → 0 errors
   npm run lint           → 0 errors, 0 warnings
   npm run build          → ✓ Compiled successfully · routes: / · /login · /delivery-agents/list · /create · /details/[id] · /edit/[id]
-  npm run test:e2e       → 55 passed (1.7m) — auth.setup 1 + delivery-agents.spec 10 + responsive.spec 44 (4 screens × 11 widths) · HTML report https://easy-admin-frontend.vercel.app/qa/e2e-report/
-  npm run test:e2e:mutations → 7 passed (21.8s) — auth.setup 1 + create → duplicate-email rejection → list search → edit → approve → delete · HTML report https://easy-admin-frontend.vercel.app/qa/mutation-report/
+  npm run test:e2e       → 69 passed (2.8m) — auth.setup 1 + delivery-agents.spec 13 (10 happy-path/state + 3 negative: cancelled delete, edit validation, unknown edit id) + responsive.spec 55 (5 screens × 11 widths) · HTML report https://easy-admin-frontend.vercel.app/qa/e2e-report/
+  npm run test:e2e:mutations → 7 passed (19.7s) — auth.setup 1 + create → duplicate-email rejection (field error under Email) → list search → edit → approve → delete · HTML report https://easy-admin-frontend.vercel.app/qa/mutation-report/
 
 Backend (Easy-Backend-v2)
   npx jest tests/admin_delivery_agents_v2.test.js → 12 passed, 12 total
@@ -115,5 +115,5 @@ Backend (Easy-Backend-v2)
 
 ## 10. Screen sizes and browsers checked
 
-- Widths: 1920 · 1600 · 1440 · 1366 · 1280 · 1024 · 991 · 768 · 640 · 480 · 375 — list, details, create, login (Playwright `responsive.spec.ts`, screenshots in `docs/screenshots`).
+- Widths: 1920 · 1600 · 1440 · 1366 · 1280 · 1024 · 991 · 768 · 640 · 480 · 375 — list, details, create, edit, login (Playwright `responsive.spec.ts`, 55 screenshots in `docs/screenshots`).
 - Browsers: Chromium (Playwright) and Chrome (manual). Firefox / Safari not checked.
