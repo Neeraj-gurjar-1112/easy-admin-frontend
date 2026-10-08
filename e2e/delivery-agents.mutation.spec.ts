@@ -44,7 +44,10 @@ test.describe.serial("Delivery agents — create → list → edit → delete @m
     await page.getByLabel("Password").fill(agent.password);
     await page.getByRole("button", { name: "Create agent" }).click();
 
-    await expect(page.getByText("Email is already registered")).toBeVisible();
+    // The API answers with details[{ field: "email" }], so the message must sit under the Email input
+    const emailField = page.locator(".form-field", { has: page.locator("#agent-email") });
+    await expect(emailField.locator(".form-error")).toHaveText("Email is already registered");
+    await expect(page.locator(".form-message")).toHaveCount(0); // not a banner
     await expect(page).toHaveURL(/\/delivery-agents\/create$/); // typed values are kept
     await expect(page.getByLabel("Full name")).toHaveValue("Duplicate Test");
   });
