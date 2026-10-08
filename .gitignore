@@ -53,3 +53,6 @@ next-env.d.ts
 /e2e/.auth/
 
 .vercel
+
+# playwright working output (reports are published from public/qa instead)
+/playwright-report-*/
