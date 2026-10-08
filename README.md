@@ -47,7 +47,7 @@ Docs: `docs/test-cases.md` (WM QA format, 46 cases P/N) · `docs/qa-build-report
 ```bash
 cd D:\Easy-Backend-v2
 npm install
-node scripts/seed-delivery-agents.js     # 32 agents + admin admin@example.com / Admin@123 (local seed only)
+node scripts/seed-delivery-agents.js     # 32 agents + admin admin@example.com (password: SEED_ADMIN_PASSWORD, or the local default in lib/seed/deliveryAgents.js)
 npm run dev                              # http://localhost:8080  — admin API at /api/admin
 ```
 
@@ -67,6 +67,8 @@ npm run dev                        # http://localhost:3000 → /login → /deliv
 npm run type-check
 npm run lint
 npm run build
+# Playwright needs the admin login (never committed): set it in your shell first
+#   PowerShell:  $env:E2E_ADMIN_EMAIL="admin@example.com"; $env:E2E_ADMIN_PASSWORD="<seed password>"
 npm run test:e2e              # login setup + read-only specs + responsive screenshots (backend must be running)
 npm run test:e2e:mutations    # create / edit / delete spec — local backend only
 npm run shots                 # responsive spec alone → ./screenshots

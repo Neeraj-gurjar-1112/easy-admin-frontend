@@ -36,13 +36,16 @@ fields and hashes a new password correctly.
 | PATCH `/delivery-agents/:id` wrote the whole body into the document, so a plain-text password could have been stored | Field whitelist + `save()` so the pre-save hook hashes it; covered by `tests/admin_delivery_agents_v2.test.js` |
 | A Mongo URI without a database name silently used Mongo's default `test` database | `lib/db/mongoose.js` honours `DB_NAME` when the URI has no path; seed uses the same resolution |
 | List endpoint had no search / filters, so the admin UI could only page | `q`, `vehicle_type`, `approval`, `presence`, `sort`, `order` with Joi validation; legacy `{ agents, pagination }` shape unchanged |
-| Clicking a button right after a page loaded in Playwright sometimes did nothing (React not yet hydrated) | Tests retry the click until the URL changes (`openFirstRowDetails`) |
+| Clicking a button right after a page loaded in Playwright sometimes did nothing (React not yet hydrated / dev route not compiled) | Tests retry the click until the URL changes (`openFirstRowDetails`); dev server keeps routes compiled (`onDemandEntries`) |
+| Duplicate email came back as a plain `{ error }`, so the form showed a banner instead of the field (review point 2) | API answers `details: [{ field: "email" }]`; form maps it under the input; mutation test asserts the field, not the page |
+| Form and Joi rules drifted (password required only client-side, licence limit hard-coded) (review point 3) | One `LIMITS` object in the API, mirrored 1:1 by `AGENT_RULES`; password 8–72 required on create on both sides |
+| `.env.local.example` shipped demo mode (review point 4) | Example now points at the real API (`NEXT_PUBLIC_USE_MOCK=0`); demo mode is opt-in |
 
 ## 5. Test accounts / roles
 
 | Role | Account | Where |
 |---|---|---|
-| Admin (only role in Easy's admin API) | `admin@example.com` — password is the local seed default, see `Easy-Backend-v2/scripts/seed-delivery-agents.js` | Created by the seed; local database only |
+| Admin (only role in Easy's admin API) | `admin@example.com` — password = `SEED_ADMIN_PASSWORD` on the host, or the local default inside `Easy-Backend-v2/lib/seed/deliveryAgents.js` | Created by the seed (script, or on boot with `SEED_ON_BOOT=1`) |
 | Delivery agents | 32 seeded agents (`rahul.verma@example.com` …) — no passwords set | Seed |
 
 No real passwords in this report. Change `SEED_ADMIN_PASSWORD` before seeding any shared environment.
@@ -50,16 +53,17 @@ No real passwords in this report. Change `SEED_ADMIN_PASSWORD` before seeding an
 ## 6. Data QA must prepare first
 
 ```bash
-# Backend (Node 20+, MongoDB on localhost:27017)
+# Backend (Node 20+, MongoDB on localhost:27017 — or USE_MEMORY_DB=1 for a self-contained in-memory database)
 cd Easy-Backend-v2
 npm install
-node scripts/seed-delivery-agents.js       # idempotent; add --reset to wipe agents first
+node scripts/seed-delivery-agents.js       # idempotent; add --reset to wipe agents first (not needed with SEED_ON_BOOT=1)
 npm run dev                                # http://localhost:8080
 
 # Frontend
 cd easy-admin-frontend
 npm install
-cp .env.local.example .env.local           # NEXT_PUBLIC_API_BASE_URL=http://localhost:8080/api/admin, NEXT_PUBLIC_USE_MOCK=0
+cp .env.local.example .env.local           # already set to the real API (NEXT_PUBLIC_USE_MOCK=0)
+$env:E2E_ADMIN_PASSWORD="<seed password>"  # for Playwright only
 npm run dev                                # http://localhost:3000
 ```
 

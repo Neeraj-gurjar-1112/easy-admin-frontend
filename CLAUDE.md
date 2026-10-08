@@ -26,7 +26,7 @@ npm run shots                # responsive spec alone: 4 screens × 11 widths (WM
 ```
 
 Backend for HW2: `cd D:\Easy-Backend-v2 && node scripts/seed-delivery-agents.js && npm run dev`
-(seed admin `admin@example.com` / `Admin@123`, local only).
+(seed admin `admin@example.com`; password = `SEED_ADMIN_PASSWORD` or the local default inside `lib/seed/deliveryAgents.js`). Playwright reads `E2E_ADMIN_EMAIL` / `E2E_ADMIN_PASSWORD` from the environment.
 
 ## Folders
 

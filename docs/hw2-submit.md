@@ -9,14 +9,13 @@ Notion page: https://app.notion.com/p/3f0326b2d5fb819f9d47cd6007450607 (sections
 README + build report part 6 already contain the exact commands. Demo link stays the Vercel
 frontend on mock data; Notion §1 says the real API runs locally. Risk: reviewer may want a live API.
 
-**B. Live API (better).** Deploy Easy-Backend-v2 to Render (free) with MongoDB Atlas (free M0):
-1. Atlas: create a free cluster, user, allow `0.0.0.0/0`, copy the URI; set `DB_NAME=easy_app`.
-2. Render → New Web Service → repo `Easy-Backend-v2`, build `npm ci`, start `npm start`,
-   env: `DB_CONNECTION_STRING`, `DB_NAME`, `JWT_SECRET`, `ADMIN_API_KEY`, `NODE_ENV=production`,
-   `ALLOWED_ORIGINS=https://<your-vercel-app>.vercel.app,http://localhost:3000`.
-3. Seed once from your laptop against Atlas: `DB_CONNECTION_STRING=<atlas uri> DB_NAME=easy_app SEED_ADMIN_PASSWORD=<new> node scripts/seed-delivery-agents.js`
-4. Vercel → project env: `NEXT_PUBLIC_API_BASE_URL=https://<render-app>.onrender.com/api/admin`, `NEXT_PUBLIC_USE_MOCK=0` → redeploy.
-   Free Render instances sleep; first request can take ~50 s — say so in README.
+**B. Live API (required for Pass — review point 1).** Only a Render account is needed now:
+1. https://render.com → sign in with GitHub → New → **Blueprint** → repo `Easy-Backend-v2` → it reads `render.yaml`
+   (zero-setup mode: `USE_MEMORY_DB=1` + `SEED_ON_BOOT=1`, no Atlas) → it asks for `SEED_ADMIN_PASSWORD` → type the QA password → Apply.
+2. Wait for "Live", copy `https://easy-backend-v2-xxxx.onrender.com`, check `/api/health` in the browser.
+3. Give the URL + password to Claude → Vercel env `NEXT_PUBLIC_API_BASE_URL` / `NEXT_PUBLIC_USE_MOCK=0`, redeploy, Notion §2 / §12.
+   Free instances sleep after idle (first request ~1 min) and the in-memory DB reseeds on every restart — written in §12.
+   Persistent data later: MongoDB Atlas M0 + `DB_CONNECTION_STRING`, `USE_MEMORY_DB=0` (notes in `render.yaml`).
 
 ## 2. Git
 
