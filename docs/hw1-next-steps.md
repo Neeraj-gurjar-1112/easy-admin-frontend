@@ -4,43 +4,21 @@ The screen is built and all checks pass. What is left is the evidence the review
 Do the steps in this order; every step says which Notion section it feeds.
 Notion page: https://app.notion.com/p/3f0326b2d5fb819f9d47cd6007450607
 
-## 1. Design link (≈20 min) — Claude Design  → Notion §1 "Design"
+## 1. Design link — Figma file from the generated kit (10 min)
 
-Open Claude Design, new project, paste this prompt. Then paste the link in Notion and in README.
+The design exists: `node scripts/design-kit/build.mjs` writes 13 SVG artboards + a token sheet to
+`public/design/` (board: https://easy-admin-frontend.vercel.app/design/), and
+`node scripts/design-kit/export.mjs` writes the PNG exports and the design-vs-build images to `docs/design/`.
 
-```
-Design an admin web screen for "Easy", a hyperlocal grocery + food delivery service in Indian
-cities. Screen: "Delivery agents" list page of the admin panel. Two artboards: desktop 1440px and
-phone 375px, plus three small state variants (loading, empty, error) beside the desktop frame.
+Make it a Figma file (reviewers asked for Figma):
+1. figma.com → New design file → rename it "Easy Admin — Delivery agents".
+2. Open `D:\projects\easy-admin-frontend\public\design\` in Explorer, select all 13 `.svg` files and drag them
+   onto the Figma canvas (or File → Import). Each SVG lands as an editable frame with real text layers.
+3. Arrange them left to right in file order (01 … 13); Figma keeps the file names as frame names.
+4. Share → "Anyone with the link can view" → Copy link.
+5. Paste the link into Notion HW1 §1 "Design" (replace "_link added after importing the SVGs_") and HW2 §10 "Design link".
 
-Visual language (reuse exactly): white cards with 1px #e3e8ef border and 10px radius on a #f3f5f9
-page; text #0f172a / secondary #475569 / muted #64748b; primary blue #2563eb with soft #dbeafe;
-status pairs green #15803d/#dcfce7, amber #b45309/#fef3c7, red #b91c1c/#fee2e2, cyan #0e7490/#cffafe,
-neutral #475569/#e2e8f0; dark navy sidebar #0f172a with #cbd5e1 text; font Inter.
-
-Desktop layout, left to right / top to bottom:
-1. Sidebar 248px: logo square "E" + "Easy Admin"; one group "Operations" with the single
-   entry "Delivery agents" (active) — only the page that exists is listed.
-2. Top bar 56px: "Admin panel" label left; theme toggle and admin email chip right.
-3. Page header: title "Delivery agents", one-line description, primary button "Add agent".
-4. Four KPI tiles in a row: Total agents 32 · Pending approval 5 · Online now 17 (hint "7 busy · 8 offline")
-   · Average rating 4.5 (hint "Out of 5, rated agents only"). Each tile has an icon chip on the right.
-5. Filter card: search "Search name, phone or email" (wide), dropdowns "All vehicles",
-   "Approved and pending", "Any status", outlined "Reset" button at the right end.
-6. Table card: columns Agent (initials avatar + name + short id), Contact (phone + email),
-   Vehicle (cyan badge), Approval (green "Approved" / amber "Pending" badge), Status (dot badge
-   Online green / Busy amber / Offline grey), Assigned, Completed, Rating (star + 4.8), Joined
-   (2025-03-12), Actions (eye icon, check or ban icon). 10 rows. Footer: "Total 32" left,
-   paginator with page-size dropdown right.
-Phone 375: sidebar hidden behind a hamburger; KPI tiles stacked one per row; filters stacked full
-width; the table scrolls horizontally inside its card; paginator centred; buttons full width.
-States: loading = grey skeleton bars in tiles and 8 table rows; empty = inbox icon, "No agents match
-these filters", "Clear filters" button; error = warning icon, "Could not load data", server message,
-"Try again" button.
-Numbers use a three-digit comma, dates YYYY-MM-DD, money ₹ without decimals. All text in English.
-```
-
-Then fill `docs/design-check.md` against what Claude Design produced (≥ 3 real questions).
+Then fill `docs/design-check.md` (done) and the questions (done) — nothing else to write.
 
 ## 2. Screenshots  → Notion §2
 

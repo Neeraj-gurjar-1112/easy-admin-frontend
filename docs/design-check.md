@@ -1,6 +1,6 @@
 # Design check — Step 2 Part A
 
-Design: _Claude Design link — see Notion page §1_ (desktop 1440 + phone 375, filled / loading / empty / error variants)
+Design: https://easy-admin-frontend.vercel.app/design/ (13 artboards generated from the token file; SVG sources `public/design/`, PNG exports `docs/design/`; Figma file = the same SVGs imported)
 Screen: Easy Admin → Delivery agents list
 Checked against: WM | HTML development guideline (checklist when reviewing a design before development)
 
