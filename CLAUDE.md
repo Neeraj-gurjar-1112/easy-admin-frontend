@@ -22,7 +22,7 @@ npm run lint
 npm run build
 npm run test:e2e             # Playwright: auth.setup (login once) + read-only specs + responsive; backend must run
 npm run test:e2e:mutations   # *.mutation.spec.ts only — local backend only, never a shared server without telling the team
-npm run shots                # responsive spec alone: 4 screens × 10 WM widths → ./screenshots + no-horizontal-scroll assertion
+npm run shots                # responsive spec alone: 4 screens × 11 widths (WM list + 1440) → ./screenshots + no-horizontal-scroll assertion
 ```
 
 Backend for HW2: `cd D:\Easy-Backend-v2 && node scripts/seed-delivery-agents.js && npm run dev`

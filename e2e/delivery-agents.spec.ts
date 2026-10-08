@@ -11,8 +11,8 @@ const totalLabel = (page: Page) => page.locator(".list-pagination-total");
 const openFirstRowDetails = async (page: Page) => {
   await expect(async () => {
     await page.locator(".p-datatable-tbody tr").first().getByRole("button", { name: /^View/ }).click();
-    await expect(page).toHaveURL(/\/delivery-agents\/details\//, { timeout: 4_000 });
-  }).toPass({ timeout: 20_000 });
+    await expect(page).toHaveURL(/\/delivery-agents\/details\//, { timeout: 8_000 });
+  }).toPass({ timeout: 60_000 });
 };
 /** PrimeReact Dropdown: open it by its visible placeholder, pick an option by text. */
 const pickDropdown = async (page: Page, placeholder: string, option: string) => {

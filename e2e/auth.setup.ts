@@ -9,14 +9,15 @@ const PASSWORD = process.env.E2E_ADMIN_PASSWORD || "Admin@123";
 
 setup("admin login", async ({ page }) => {
   await page.goto("/login");
-  await expect(page.getByRole("heading", { name: "Easy Admin" })).toBeVisible();
+  // Generous waits: on a freshly started dev server the first compile of a route can take a while
+  await expect(page.getByRole("heading", { name: "Easy Admin" })).toBeVisible({ timeout: 60_000 });
 
   await page.getByLabel("Email").fill(EMAIL);
   await page.getByLabel("Password").fill(PASSWORD);
   await page.getByRole("button", { name: "Sign in" }).click();
 
-  await expect(page).toHaveURL(/\/delivery-agents\/list$/);
-  await expect(page.getByRole("heading", { name: "Delivery agents" })).toBeVisible();
+  await expect(page).toHaveURL(/\/delivery-agents\/list$/, { timeout: 60_000 });
+  await expect(page.getByRole("heading", { name: "Delivery agents" })).toBeVisible({ timeout: 60_000 });
 
   await page.context().storageState({ path: ADMIN_STORAGE_STATE });
 });

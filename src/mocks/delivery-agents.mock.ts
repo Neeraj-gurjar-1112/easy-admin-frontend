@@ -10,11 +10,13 @@ import { presenceOf } from "@/types/delivery-agent";
 import type { DeliveryAgentApi } from "@/api-services/DeliveryAgentService.types";
 import { ApiError } from "@/types/api";
 
-// HW1 only. In-memory copy of the Easy admin API for delivery agents, with the same
-// contract as the real service (search, filters, sort, paging, summary, mutations, delays)
-// so the screen code does not change in HW2 — only NEXT_PUBLIC_USE_MOCK flips.
+// Demo-mode API (no backend). Same contract as the real service (search, filters, sort, paging,
+// summary, mutations, network delay) so the screen code does not change when the API URL is set.
+// The rows live in the browser's localStorage, so creates / edits / deletes survive a reload in
+// that browser; "Reset demo data" in the top bar restores the 32 seed rows.
 
 const DELAY_MS = 600;
+const STORAGE_KEY = "easy-admin-mock-agents-v1";
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /** Deterministic Mongo-looking id from an index (24 hex chars). */
@@ -70,26 +72,72 @@ const SEEDS: Seed[] = [
   ["Ishita Roy", "ishita.roy@example.com", "+91 98765 00015", "scooter", true, false, false, 0, 740, 3.8, "2025-03-30T08:50:00Z", "WB02 20250330"],
 ];
 
-let agents: DeliveryAgent[] = SEEDS.map(
-  ([name, email, phone, vehicle_type, approved, active, available, assigned, completed, rating, created_at, license], i) => ({
-    _id: mockId(i + 1),
-    name,
-    email,
-    phone,
-    vehicle_type,
-    license_number: license ?? null,
-    approved,
-    active,
-    available,
-    assigned_orders: assigned,
-    completed_orders: completed,
-    rating,
-    total_ratings: completed ? Math.round(completed * 0.6) : 0,
-    working_hours: { start: "09:00", end: "21:00" },
-    current_location: active ? { lat: 19.076, lng: 72.8777, updated_at: new Date().toISOString() } : null,
-    created_at,
-  }),
-);
+function seedAgents(): DeliveryAgent[] {
+  return SEEDS.map(
+    ([name, email, phone, vehicle_type, approved, active, available, assigned, completed, rating, created_at, license], i) => ({
+      _id: mockId(i + 1),
+      name,
+      email,
+      phone,
+      vehicle_type,
+      license_number: license ?? null,
+      approved,
+      active,
+      available,
+      assigned_orders: assigned,
+      completed_orders: completed,
+      rating,
+      total_ratings: completed ? Math.round(completed * 0.6) : 0,
+      working_hours: { start: "09:00", end: "21:00" },
+      current_location: active ? { lat: 19.076, lng: 72.8777, updated_at: new Date().toISOString() } : null,
+      created_at,
+    }),
+  );
+}
+
+// ---- browser persistence ----------------------------------------------------------------
+let cache: DeliveryAgent[] | null = null;
+
+function load(): DeliveryAgent[] {
+  if (cache) return cache;
+  if (typeof window !== "undefined") {
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as DeliveryAgent[];
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          cache = parsed;
+          return cache;
+        }
+      }
+    } catch {
+      // unreadable storage → start from the seed
+    }
+  }
+  cache = seedAgents();
+  return cache;
+}
+
+function save(next: DeliveryAgent[]) {
+  cache = next;
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  } catch {
+    // storage full / blocked → the session still works, it just won't survive a reload
+  }
+}
+
+/** "Reset demo data" in the top bar: back to the 32 seed rows. */
+export function resetMockData(): void {
+  cache = null;
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(STORAGE_KEY);
+  } catch {
+    // ignore
+  }
+}
 
 function summarise(rows: DeliveryAgent[]): DeliveryAgentSummary {
   const rated = rows.filter((a) => a.rating > 0);
@@ -105,9 +153,16 @@ function summarise(rows: DeliveryAgent[]): DeliveryAgentSummary {
 }
 
 function find(id: string): DeliveryAgent {
-  const agent = agents.find((a) => a._id === id);
+  const agent = load().find((a) => a._id === id);
   if (!agent) throw new ApiError("Delivery agent not found", 404);
   return agent;
+}
+
+function nextId(): string {
+  const used = new Set(load().map((a) => a._id));
+  let n = load().length + 1;
+  while (used.has(mockId(n))) n += 1;
+  return mockId(n);
 }
 
 export const mockDeliveryAgentApi: DeliveryAgentApi = {
@@ -115,9 +170,10 @@ export const mockDeliveryAgentApi: DeliveryAgentApi = {
     await wait(DELAY_MS);
     const { page, limit, q = "", vehicle_type = "", approval = "", presence = "", sort = "created_at", order = "desc" } = params;
     const term = q.trim().toLowerCase();
+    const all = load();
 
     // Filter
-    let rows = agents.filter((a) => {
+    let rows = all.filter((a) => {
       const matchesSearch =
         !term ||
         a.name.toLowerCase().includes(term) ||
@@ -143,13 +199,13 @@ export const mockDeliveryAgentApi: DeliveryAgentApi = {
     return {
       agents: rows.slice(start, start + limit),
       pagination: { page, limit, total, pages: Math.max(1, Math.ceil(total / limit)) },
-      summary: summarise(agents),
+      summary: summarise(all),
     };
   },
 
   async getSummary(): Promise<DeliveryAgentSummary> {
     await wait(DELAY_MS / 2);
-    return summarise(agents);
+    return summarise(load());
   },
 
   async getById(id: string): Promise<DeliveryAgentDetails> {
@@ -164,11 +220,12 @@ export const mockDeliveryAgentApi: DeliveryAgentApi = {
 
   async create(payload: DeliveryAgentPayload): Promise<DeliveryAgent> {
     await wait(DELAY_MS);
-    if (agents.some((a) => a.email.toLowerCase() === payload.email.toLowerCase())) {
-      throw new ApiError("Email is already registered", 400);
+    const all = load();
+    if (all.some((a) => a.email.toLowerCase() === payload.email.toLowerCase())) {
+      throw new ApiError("Email is already registered", 400, ["Email is already registered"], { email: "Email is already registered" });
     }
     const created: DeliveryAgent = {
-      _id: mockId(agents.length + 1),
+      _id: nextId(),
       name: payload.name,
       email: payload.email.toLowerCase(),
       phone: payload.phone,
@@ -185,37 +242,40 @@ export const mockDeliveryAgentApi: DeliveryAgentApi = {
       current_location: null,
       created_at: new Date().toISOString(),
     };
-    agents = [created, ...agents];
+    save([created, ...all]);
     return created;
   },
 
   async update(id: string, patch: Partial<DeliveryAgentPayload>): Promise<DeliveryAgent> {
     await wait(DELAY_MS);
     const agent = find(id);
+    if (patch.email && load().some((a) => a._id !== id && a.email.toLowerCase() === patch.email!.toLowerCase())) {
+      throw new ApiError("Email is already registered", 400, ["Email is already registered"], { email: "Email is already registered" });
+    }
     const { password: _password, ...rest } = patch;
     void _password; // never stored on the client
-    Object.assign(agent, rest);
-    return agent;
+    const updated: DeliveryAgent = { ...agent, ...rest, email: rest.email ? rest.email.toLowerCase() : agent.email };
+    save(load().map((a) => (a._id === id ? updated : a)));
+    return updated;
   },
 
   async approve(id: string): Promise<DeliveryAgent> {
     await wait(DELAY_MS / 2);
-    const agent = find(id);
-    agent.approved = true;
-    return agent;
+    const updated = { ...find(id), approved: true };
+    save(load().map((a) => (a._id === id ? updated : a)));
+    return updated;
   },
 
   async reject(id: string): Promise<DeliveryAgent> {
     await wait(DELAY_MS / 2);
-    const agent = find(id);
-    agent.approved = false;
-    agent.active = false;
-    return agent;
+    const updated = { ...find(id), approved: false, active: false };
+    save(load().map((a) => (a._id === id ? updated : a)));
+    return updated;
   },
 
   async remove(id: string): Promise<void> {
     await wait(DELAY_MS / 2);
     find(id);
-    agents = agents.filter((a) => a._id !== id);
+    save(load().filter((a) => a._id !== id));
   },
 };

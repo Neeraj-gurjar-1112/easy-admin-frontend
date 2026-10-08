@@ -5,15 +5,16 @@ import { test, expect, type Page } from "@playwright/test";
 // full-page screenshot into ./screenshots, and fail if the document is wider than the viewport
 // (= sideways scrolling).  Run: npm run shots
 
-const WM_WIDTHS = [1920, 1600, 1366, 1280, 1024, 991, 768, 640, 480, 375];
+// WM list + 1440 (the QA team checks 1440 / 768 / 375 explicitly)
+const WM_WIDTHS = [1920, 1600, 1440, 1366, 1280, 1024, 991, 768, 640, 480, 375];
 const VIEWPORT_HEIGHT = 900;
 
 /** Click "View" on the first row and wait for the details page. Retries once if the click landed before hydration. */
 const openFirstRowDetails = async (page: Page) => {
   await expect(async () => {
     await page.locator(".p-datatable-tbody tr").first().getByRole("button", { name: /^View/ }).click();
-    await expect(page).toHaveURL(/\/delivery-agents\/details\//, { timeout: 4_000 });
-  }).toPass({ timeout: 20_000 });
+    await expect(page).toHaveURL(/\/delivery-agents\/details\//, { timeout: 8_000 });
+  }).toPass({ timeout: 60_000 });
 };
 
 interface Screen {

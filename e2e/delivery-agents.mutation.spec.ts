@@ -17,8 +17,8 @@ const agent = {
 const openFirstRowDetails = async (page: Page) => {
   await expect(async () => {
     await page.locator(".p-datatable-tbody tr").first().getByRole("button", { name: /^View/ }).click();
-    await expect(page).toHaveURL(/\/delivery-agents\/details\//, { timeout: 4_000 });
-  }).toPass({ timeout: 20_000 });
+    await expect(page).toHaveURL(/\/delivery-agents\/details\//, { timeout: 8_000 });
+  }).toPass({ timeout: 60_000 });
 };
 
 test.describe.serial("Delivery agents — create → list → edit → delete @mutation", () => {
@@ -65,8 +65,8 @@ test.describe.serial("Delivery agents — create → list → edit → delete @m
     // Same hydration guard as View: retry the click until the edit page is open
     await expect(async () => {
       await page.locator(".agent-hero").getByRole("button", { name: "Edit" }).click();
-      await expect(page).toHaveURL(/\/delivery-agents\/edit\//, { timeout: 4_000 });
-    }).toPass({ timeout: 20_000 });
+      await expect(page).toHaveURL(/\/delivery-agents\/edit\//, { timeout: 8_000 });
+    }).toPass({ timeout: 60_000 });
 
     await expect(page.getByLabel("Full name")).toHaveValue(agent.name);
     await page.getByLabel("Full name").fill(agent.renamed);
