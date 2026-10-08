@@ -119,6 +119,52 @@ test.describe("Delivery agents — create form validation (nothing is saved)", (
   });
 });
 
+test.describe("Delivery agents — negative paths (nothing is saved)", () => {
+  test("cancelling the delete dialog keeps the row", async ({ page }) => {
+    await page.goto(LIST);
+    await expect(rows(page).first()).toBeVisible();
+    const name = await rows(page).first().locator(".cell-primary").first().innerText();
+    const total = await totalLabel(page).innerText();
+
+    await rows(page).first().getByRole("button", { name: /^Delete/ }).click();
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+    await dialog.getByRole("button", { name: "Cancel" }).click();
+
+    await expect(dialog).toBeHidden();
+    await expect(rows(page).first()).toContainText(name);
+    await expect(totalLabel(page)).toHaveText(total);
+  });
+
+  test("edit rejects an empty name and a wrong phone without saving", async ({ page }) => {
+    await page.goto(LIST);
+    await expect(rows(page).first()).toBeVisible();
+    await openFirstRowDetails(page);
+    await expect(async () => {
+      await page.locator(".agent-hero").getByRole("button", { name: "Edit" }).click();
+      await expect(page).toHaveURL(/\/delivery-agents\/edit\//, { timeout: 8_000 });
+    }).toPass({ timeout: 60_000 });
+    await expect(page.getByLabel("Full name")).not.toHaveValue("");
+
+    await page.getByLabel("Full name").fill("");
+    await page.getByRole("button", { name: "Save changes" }).click();
+    await expect(page.getByText("Name is required")).toBeVisible();
+
+    await page.getByLabel("Full name").fill("Still Here");
+    await page.getByLabel("Phone").fill("12345");
+    await page.getByRole("button", { name: "Save changes" }).click();
+    await expect(page.getByText("Phone must contain at least 10 digits")).toBeVisible();
+    await expect(page).toHaveURL(/\/delivery-agents\/edit\//); // nothing was saved, still on the form
+  });
+
+  test("an edit URL with an unknown id shows the not-found state", async ({ page }) => {
+    await page.goto("/delivery-agents/edit/64b000000000000000000000");
+    await expect(page.getByText("Could not load data")).toBeVisible();
+    await expect(page.getByText("Delivery agent not found")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Try again" })).toBeVisible();
+  });
+});
+
 test.describe("Access", () => {
   // Fresh browser context without the saved session
   test.use({ storageState: { cookies: [], origins: [] } });

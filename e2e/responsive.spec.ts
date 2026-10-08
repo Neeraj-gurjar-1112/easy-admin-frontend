@@ -47,6 +47,19 @@ const SCREENS: Screen[] = [
     },
   },
   {
+    name: "delivery-agents-edit",
+    open: async (page) => {
+      await page.goto("/delivery-agents/list");
+      await page.locator(".p-datatable-tbody tr").first().waitFor({ state: "visible" });
+      await openFirstRowDetails(page);
+      await expect(async () => {
+        await page.locator(".agent-hero").getByRole("button", { name: "Edit" }).click();
+        await expect(page).toHaveURL(/\/delivery-agents\/edit\//, { timeout: 8_000 });
+      }).toPass({ timeout: 60_000 });
+      await page.locator(".form-card").waitFor({ state: "visible" });
+    },
+  },
+  {
     name: "login",
     open: async (page) => {
       await page.goto("/login");
