@@ -1,6 +1,6 @@
 # Design check — Step 2 Part A
 
-Design: https://easy-admin-frontend.vercel.app/design/ (13 artboards generated from the token file; SVG sources `public/design/`, PNG exports `docs/design/`; Figma file = the same SVGs imported)
+Design: https://easy-admin-frontend.vercel.app/design/ (13 artboards generated from the token file; SVG sources `public/design/`, PNG exports `docs/design/`; the board is the design deliverable, no separate Figma file — the SVGs import into Figma as editable frames if needed)
 Screen: Easy Admin → Delivery agents list
 Checked against: WM | HTML development guideline (checklist when reviewing a design before development)
 
