@@ -46,13 +46,14 @@ export const SEARCH_DEBOUNCE_MS = 400;
 /** Browser storage key for the admin JWT (HW2 login). */
 export const ADMIN_TOKEN_KEY = "easy_admin_token";
 
-// Validation limits — identical to the Mongoose schema (DeliveryAgent.js)
+// Validation limits — identical to the API Joi schema (Easy-Backend-v2
+// src/admin/routes/delivery-agents/DeliveryAgentsValidations.js → LIMITS). Change both together.
 export const AGENT_RULES = {
   name: { minLength: 2, maxLength: 100 },
   email: { pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ },
   phone: { pattern: /^[\d\s\-+()]+$/, minDigits: 10, example: "+91 98765 43210" },
-  rating: { min: 0, max: 5 },
-  password: { minLength: 8 },
+  licenseNumber: { maxLength: 50 },
+  password: { minLength: 8, maxLength: 72 }, // required on create, optional on edit — same as the API
 } as const;
 
 /** Sidebar registry — only the pages that exist in this app (one feature → one entry). */

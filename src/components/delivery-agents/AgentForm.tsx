@@ -81,8 +81,9 @@ function toPayload(values: AgentFormValues, mode: AgentFormProps["mode"]): Deliv
   return payload;
 }
 
-// Create / edit form. Validation rules are the backend's (Joi + Mongoose) written once in
-// AGENT_RULES; server messages are mapped back onto fields via setError.
+// Create / edit form. Every limit comes from AGENT_RULES, which mirrors the API Joi schema
+// (password required on create, optional on edit — same on both sides); server messages are
+// mapped back onto fields via setError.
 export default function AgentForm({ mode, agent, onSubmit, onCancel, serverError, submitting = false }: AgentFormProps) {
   const {
     register,
@@ -199,7 +200,10 @@ export default function AgentForm({ mode, agent, onSubmit, onCancel, serverError
             id="agent-license"
             placeholder="MH12 20250001"
             className={errors.license_number ? "p-invalid" : undefined}
-            {...register("license_number", { maxLength: { value: 50, message: "License number cannot exceed 50 characters" } })}
+            maxLength={AGENT_RULES.licenseNumber.maxLength}
+            {...register("license_number", {
+              maxLength: { value: AGENT_RULES.licenseNumber.maxLength, message: `License number cannot exceed ${AGENT_RULES.licenseNumber.maxLength} characters` },
+            })}
           />
           {errors.license_number && <small className="form-error">{errors.license_number.message}</small>}
         </div>
@@ -217,12 +221,15 @@ export default function AgentForm({ mode, agent, onSubmit, onCancel, serverError
             {...register("password", {
               required: mode === "create" ? "Password is required" : false,
               minLength: { value: AGENT_RULES.password.minLength, message: `Password must be at least ${AGENT_RULES.password.minLength} characters long` },
+              maxLength: { value: AGENT_RULES.password.maxLength, message: `Password cannot exceed ${AGENT_RULES.password.maxLength} characters` },
             })}
           />
           {errors.password ? (
             <small className="form-error">{errors.password.message}</small>
           ) : (
-            <small className="form-hint">Used by the agent in the partner app. At least {AGENT_RULES.password.minLength} characters.</small>
+            <small className="form-hint">
+              Used by the agent in the partner app. {AGENT_RULES.password.minLength}–{AGENT_RULES.password.maxLength} characters.
+            </small>
           )}
         </div>
       </div>
