@@ -684,7 +684,7 @@ const html = `<!doctype html>
 <header><h1>Easy Admin — Delivery agents · design board</h1><p>Generated from the token file. Desktop 1440 · tablet 768 · phone 375 · filled / loading / empty / error. Each SVG imports into Figma as an editable frame.</p></header>
 <main>
 <section><h2>Artboards (${manifest.length})</h2><p class="note">Click to open the SVG at full size. The same files live in the repo under <code>public/design/</code>; PNG exports under <code>docs/design/</code>.</p>
-<div class="grid">${manifest.map((m) => `<figure><a href="./${m.name}.svg"><img src="./${m.name}.svg" alt="${m.name}" loading="lazy"></a><figcaption><span>${m.name}</span><span>${m.w} × ${m.h}</span></figcaption></figure>`).join("")}</div></section>
+<div class="grid">${manifest.map((m) => `<figure><a href="/design/${m.name}.svg"><img src="/design/${m.name}.svg" alt="${m.name}" loading="lazy"></a><figcaption><span>${m.name}</span><span>${m.w} × ${m.h}</span></figcaption></figure>`).join("")}</div></section>
 <section><h2>Tokens</h2><div class="cols">
 <div><h3 style="margin:0 0 8px;font-size:14px">Colours (day values; every one has a night twin in <code>_variables.scss</code>)</h3><table>${tokenRows}</table></div>
 <div><h3 style="margin:0 0 8px;font-size:14px">Type</h3><table><tr><td>Family</td><td>Inter</td></tr><tr><td>Page title</td><td>24 / 700 (20 on phones)</td></tr><tr><td>KPI number</td><td>28 / 700</td></tr><tr><td>Section title</td><td>16 / 600</td></tr><tr><td>Body</td><td>14 / 400 · 600 for primary cell text</td></tr><tr><td>Labels / badges / hints</td><td>12 / 500–600</td></tr></table>
