@@ -7,6 +7,7 @@ import { PageHeader, StateWrapper, ListPagination } from "@/components";
 import AgentStats from "@/components/delivery-agents/AgentStats";
 import AgentFilters, { EMPTY_FILTERS, hasActiveFilters, type AgentFilterValues } from "@/components/delivery-agents/AgentFilters";
 import AgentTable from "@/components/delivery-agents/AgentTable";
+import AgentCards from "@/components/delivery-agents/AgentCards";
 import { useAgentActions } from "@/components/delivery-agents/AgentActions";
 import { useDebounce, useGetDeliveryAgentList } from "@/hooks";
 import type { AgentSortField, DeliveryAgentListParams, SortDirection } from "@/types/delivery-agent";
@@ -105,6 +106,7 @@ export default function DeliveryAgentListPage() {
           }
         >
           <AgentTable agents={agents} sort={sort} order={order} onSort={handleSort} onAction={actions.run} busy={isFetching || actions.busy} />
+          <AgentCards agents={agents} sort={sort} order={order} onSort={handleSort} onAction={actions.run} busy={isFetching || actions.busy} />
           <ListPagination page={pagination.page} limit={limit} totalRecords={pagination.total} onChange={handlePage} />
         </StateWrapper>
       </section>
