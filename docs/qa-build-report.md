@@ -6,7 +6,7 @@ Format: WM | Report (10 parts from training Step 8). Written as a hand-over to Q
 
 | | |
 |---|---|
-| Frontend repo / branch | https://github.com/Neeraj-gurjar-1112/easy-admin-frontend · `main` · **code under test: commit `8786eae`** (the deployed build is the commit right after it on `main`, which adds only this report, the test cases, screenshots and the HTML reports) |
+| Frontend repo / branch | https://github.com/Neeraj-gurjar-1112/easy-admin-frontend · `main` · **code under test: commit `26fdf72`** (the deployed build is the commit right after it on `main`, which adds only this report, the test cases, screenshots and the HTML reports) |
 | Backend repo / branch | https://github.com/Neeraj-gurjar-1112/Easy-Backend-v2 · `master` · deployed commit `1d39999` (delivery-agents module, seed, tests, render.yaml) |
 | Demo | Frontend: https://easy-admin-frontend.vercel.app (real API, login `admin@example.com` / `QaDemo@2026`) · Backend: https://easy-backend-v2.onrender.com/api/admin (Render free, in-memory database reseeded on every boot; first request after idle can take ~1 min) |
 | Date | 2026-10-08 |
@@ -39,6 +39,7 @@ fields and hashes a new password correctly.
 | Clicking a button right after a page loaded in Playwright sometimes did nothing (React not yet hydrated / dev route not compiled) | Tests retry the click until the URL changes (`openFirstRowDetails`); dev server keeps routes compiled (`onDemandEntries`) |
 | Duplicate email came back as a plain `{ error }`, so the form showed a banner instead of the field (review point 2) | API answers `details: [{ field: "email" }]`; form maps it under the input; mutation test asserts the field, not the page |
 | Form and Joi rules drifted (password required only client-side, licence limit hard-coded) (review point 3) | One `LIMITS` object in the API, mirrored 1:1 by `AGENT_RULES`; password 8–72 required on create on both sides |
+| Design review (Bhagyashree): table overflowed the 1440 card, theme blue/green failed contrast, 46/50px controls, 16px filter text, scrolling table on phones, no states on the board | Token-driven column widths (table 1142 px in a 1144 px card), palette colours over the PrimeReact theme (#2563eb 5.2:1, #15803d 5.0:1), one 44px control height, 14px text, card list below 768, states artboard; details in `docs/design-check.md` |
 | `.env.local.example` shipped demo mode (review point 4) | Example now points at the real API (`NEXT_PUBLIC_USE_MOCK=0`); demo mode is opt-in |
 
 ## 5. Test accounts / roles
@@ -84,10 +85,10 @@ Mutation tests create and delete their own agent (`e2e.<stamp>@example.com`). Th
 10. Delete on list row → confirm dialog → Cancel → row stays, Total unchanged; Delete again → confirm → toast → agent gone from search; Total decreases.
 11. Sign out → redirected to login; opening `/delivery-agents/list` directly → login with `?next=`.
 12. Stop the backend → list shows "Could not load data" with the connection message; submitting a valid create or edit form shows the same message in the form banner and keeps the typed values → start backend → Try again loads rows, submit works. Opening `/delivery-agents/details/<unknown id>` or `/edit/<unknown id>` shows "Delivery agent not found" with Try again.
-13. Resize 1920 → 375: sidebar becomes a drawer below 1024, tiles 4→2→1, filters and form stack, table scrolls inside its card, no page-level horizontal scroll.
+13. Resize 1920 → 375: at 1440 the whole table fits its card; 768–1439 it scrolls inside the card with the actions pinned right; below 768 one card per agent with a Sort by dropdown; sidebar becomes a drawer below 1024, tiles 4→2→1, filters and form stack, no page-level horizontal scroll.
 14. Toggle dark mode → every surface switches; reload keeps the choice.
 
-Full case list with IDs: `docs/test-cases.md` (51 cases: 34 positive, 17 negative).
+Full case list with IDs: `docs/test-cases.md` (54 cases: 37 positive, 17 negative).
 
 ## 8. Known issues and what is not covered
 
@@ -104,8 +105,8 @@ Frontend
   npm run type-check     → 0 errors
   npm run lint           → 0 errors, 0 warnings
   npm run build          → ✓ Compiled successfully · routes: / · /login · /delivery-agents/list · /create · /details/[id] · /edit/[id]
-  npm run test:e2e       → 69 passed (2.9m) against the deployed demo (PLAYWRIGHT_BASE_URL=https://easy-admin-frontend.vercel.app) — auth.setup 1 + delivery-agents.spec 13 (10 happy-path/state + 3 negative: cancelled delete, edit validation, unknown edit id) + responsive.spec 55 (5 screens × 11 widths) · HTML report https://easy-admin-frontend.vercel.app/qa/e2e-report/
-  npm run test:e2e:mutations → 7 passed (22.3s) against the deployed demo — auth.setup 1 + create → duplicate-email rejection (field error under Email) → list search → edit → approve → delete · HTML report https://easy-admin-frontend.vercel.app/qa/mutation-report/
+  npm run test:e2e       → 71 passed (2.4m) against the deployed demo (PLAYWRIGHT_BASE_URL=https://easy-admin-frontend.vercel.app) — auth.setup 1 + delivery-agents.spec 15 (10 happy-path/state + 2 layout: 1440 fit, phone cards + sort + 3 negative: cancelled delete, edit validation, unknown edit id) + responsive.spec 55 (5 screens × 11 widths) · HTML report https://easy-admin-frontend.vercel.app/qa/e2e-report/
+  npm run test:e2e:mutations → 7 passed (19.8s) against the deployed demo — auth.setup 1 + create → duplicate-email rejection (field error under Email) → list search → edit → approve → delete · HTML report https://easy-admin-frontend.vercel.app/qa/mutation-report/
 
 Backend (Easy-Backend-v2)
   npx jest tests/admin_delivery_agents_v2.test.js → 12 passed, 12 total

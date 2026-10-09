@@ -12,14 +12,14 @@ Legend: **Yes** = shown in the design and followed · **Not shown** = the design
 | 2 | Same element spaced the same way everywhere? | Yes | One spacing scale (4 / 8 / 12 / 16 / 24 / 32px as `$space-*`): 16px between tiles, filters and table; 24px page padding (16px on phones). |
 | 3 | Repeated parts (badges, KPI tiles, table rows, paginator) identical everywhere? | Yes | Each is one component (StatusBadge, StatTile, AgentTable, ListPagination); the details page reuses StatTile and StatusBadge unchanged. |
 | 4 | One font family, clear sizes for title / body / small? | Yes | Inter: title 24px/700, KPI number 28px/700, body 14px/400, labels 12px/500. **Q1** |
-| 5 | Clear how long text wraps on small screens? | Not shown | Decision: agent name and email truncate with an ellipsis inside the table cell (fixed column widths, table scrolls); the details page shows full text with `overflow-wrap: anywhere`. **Q2** |
+| 5 | Clear how long text wraps on small screens? | Not shown | Decision: in the table, name and email truncate with an ellipsis inside fixed-width columns (full text on hover via `title`); on phone cards and the details page the full text wraps with `overflow-wrap: anywhere`. **Q2** |
 | 6 | Empty state designed? | Yes (filters) / Not shown (no agents at all) | Decision: two variants — "No agents match these filters" + Clear filters, and "No delivery agents yet" + Add agent. **Q3** |
 | 7 | Loading state designed? | Yes | Skeleton bars in the 4 tiles and 8 skeleton table rows, same heights as the real content. |
 | 8 | Error state designed (API failed)? | Yes | Warning icon, "Could not load data", the API's own message, Try again button. |
 | 9 | Missing data cell designed (no rating yet, no license, no email)? | Not shown | Decision: show "-" (WM-consistent), never hide the cell; rating 0 → "-" without a star. **Q4** |
 | 10 | Buttons get width from padding (no fixed px)? | Yes | Width from padding; on phones the action row stretches with flex, not with a px width. Min height 44px. |
 | 11 | Images / icons fit their box? | Yes | Icon chips 40px, avatars 36px (56px on details), badge icons 12px. |
-| 12 | Table behaviour on phone shown? | Not shown | Decision: the table scrolls horizontally inside its card (`.table-scroll-box`); the page never scrolls sideways. **Q5** |
+| 12 | Table behaviour on phone shown? | Yes (revised after design review) | Below 768 the list is one card per agent (badges, full contact, numbers, labelled actions, Sort by); 768–1439 the table scrolls inside its card with the actions column pinned right; at 1440 every column fits (widths in `$agent-table-columns`). **Q5** |
 | 13 | Sidebar behaviour below 1024px shown? | Not shown | Decision: drawer over a dimmed backdrop, opened by ☰, closes on backdrop click or navigation. **Q6** |
 | 14 | Filter bar on phone shown? | Not shown | Decision: search, the three dropdowns and Reset stack full width below 768px. |
 | 15 | Light and dark colours both defined with 1:1 names? | Yes | 24 colour pairs `[day]/[night]` in `_variables.scss`, same name both modes, emitted as CSS variables. |
@@ -33,6 +33,18 @@ Legend: **Yes** = shown in the design and followed · **Not shown** = the design
 2. **Long text:** agent names up to 100 characters and long emails — truncate in the table or wrap? → truncate in the table (ellipsis), wrap on the details page.
 3. **Empty states:** is "no agents at all" the same screen as "filters matched nothing"? → no, two variants with different CTAs (Add agent vs Clear filters).
 4. **Missing values:** rating not yet given, no license number, no email — "-", "N/A" or hide? → "-".
-5. **Phone table:** horizontal scroll inside the card, or convert rows to stacked cards? → scroll inside the card (columns stay comparable; cards are a v2 idea).
+5. **Phone table:** horizontal scroll inside the card, or convert rows to stacked cards? → first answer was scroll; the design review (Bhagyashree, 2026-10-09) called a scrolling table on a phone the wrong pattern → cards below 768, board updated first, then the build.
 6. **Sidebar below 1024px:** collapse to icons or hide behind a hamburger? → hamburger drawer with backdrop.
 7. **Browsers:** any requirement beyond Chrome? → none for the homework; Firefox/Safari unchecked and listed in the build report.
+
+## Design review fixes (Bhagyashree, HW2, 2026-10-09)
+
+| # | Review point | Fix (board and build) |
+|---|---|---|
+| 1 | List at 1440 overflowed its card; Joined wrapped; actions pushed out | Fixed column widths from one token map (`$agent-table-columns`, read by the board generator too); 8px cell padding; one-line cells; actions pinned right where the table scrolls. Measured: table 1142 px in a 1144 px card. |
+| 2 | Buttons #3b82f6 (3.68:1) and Approve #22c55e (2.3:1) came from the PrimeReact theme | Theme overridden with palette tokens: primary `$blue-b1` #2563eb (5.2:1), hover `$blue-b2`, success `$green-b1` #15803d (5.0:1), danger `$red-b1`; night mode uses dark text on the light blue. |
+| 3 | Inputs 46px, dropdowns 50px | One `$control-height` 44px for inputs, dropdowns and buttons. |
+| 4 | Filter text 16px vs 14px on the board | Inputs, dropdown labels and options at `$font-size-sm` 14px. |
+| 5 | Scrolling table at 375 | Card list below 768 (board artboard 06 and build), sort moved to a "Sort by" dropdown. |
+| 6 | No hover / focus / disabled on the board | New artboard 14-states; the build uses the same values (2px `$blue-b1` focus ring, `$grey-b5` hover, explicit disabled colours). |
+
