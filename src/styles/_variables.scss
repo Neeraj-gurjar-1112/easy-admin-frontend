@@ -142,6 +142,27 @@ $sidebar-width: 248px;
 $container-max-width: 1600px;
 $touch-target: 44px;       // minimum tap size on phones
 $table-min-width: 1080px;  // below this the table scrolls inside .table-scroll-box
+$control-height: 44px;     // one height for every text input, dropdown and button (board = build)
+$icon-button-size-desktop: 36px; // row action icons on mouse screens (>= 1024); phones keep $touch-target
+$table-cell-padding-x: 8px;      // horizontal cell padding; first / last column keep $space-4 on the outside
+$sort-icon-gap: 4px;
+
+// Delivery-agents table: fixed column widths (padding included) so the whole table fits the
+// 1440 content area (1440 - sidebar 248 - 2 x 24 padding = 1144, minus the card border).
+// Narrower screens scroll the table inside its card with the actions column pinned right;
+// below 768 the list switches to cards. The design board reads the same numbers.
+$agent-table-columns: (
+  'agent': 190px,
+  'contact': 148px,
+  'vehicle': 84px,
+  'approval': 108px,
+  'status': 92px,
+  'assigned': 92px,
+  'completed': 104px,
+  'rating': 84px,
+  'joined': 100px,
+  'actions': 140px,
+);
 $search-min-width: 240px;
 $filter-min-width: 160px;
 $icon-size-lg: 40px;       // empty / error state icon

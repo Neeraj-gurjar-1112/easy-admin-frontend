@@ -181,3 +181,179 @@
     overflow-wrap: anywhere;
   }
 }
+
+// ---- Agents table: fixed widths so it fits the 1440 card (Bhagyashree design review #1) ------
+// Widths live in $agent-table-columns (tokens). Every cell stays on one line (dates, numbers,
+// badges); Agent and Contact cut long text with an ellipsis. Where the card is narrower than the
+// table (768–1439) it scrolls inside the card and the actions column stays pinned on the right.
+$agent-table-width: 0px;
+@each $name, $width in $agent-table-columns {
+  $agent-table-width: $agent-table-width + $width;
+}
+
+.agent-table.p-datatable {
+  .p-datatable-table {
+    table-layout: fixed;
+    width: 100%;
+    min-width: $agent-table-width;
+  }
+
+  @each $name, $width in $agent-table-columns {
+    .col-#{$name} {
+      width: $width;
+    }
+  }
+
+  .p-datatable-thead > tr > th,
+  .p-datatable-tbody > tr > td {
+    padding-inline: $table-cell-padding-x;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &:first-child {
+      padding-inline-start: $space-4;
+    }
+
+    &:last-child {
+      padding-inline-end: $space-4;
+    }
+  }
+
+  .p-sortable-column-icon {
+    margin-inline-start: $sort-icon-gap;
+  }
+
+  // Actions pinned to the right edge while the rest of the row scrolls
+  .col-actions {
+    position: sticky;
+    right: 0;
+    z-index: 1;
+    overflow: visible;
+    background: var(--grey-b7);
+    box-shadow: inset $border-width 0 0 var(--grey-b4);
+  }
+
+  .p-datatable-thead > tr > th.col-actions {
+    background: var(--grey-b5);
+  }
+
+  .p-datatable-tbody > tr:hover > td.col-actions {
+    background: var(--grey-b5);
+  }
+
+  // Mouse screens: 36px row icons so three fit the column; phones use the card list (44px)
+  .cell-actions .p-button.p-button-icon-only {
+    width: $icon-button-size-desktop;
+    height: $icon-button-size-desktop;
+  }
+}
+
+// ---- Card list below 768 (design review #5): one agent per card, status + actions visible ----
+.agent-cards,
+.agent-cards-toolbar {
+  display: none;
+}
+
+@include below('sm') {
+  .agents-list .table-scroll-box {
+    display: none;
+  }
+
+  .agent-cards-toolbar {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    padding: $space-4;
+    border-bottom: $border-width solid var(--grey-b4);
+
+    .p-dropdown {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+  }
+
+  .agent-cards {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+}
+
+.agent-cards-toolbar-label {
+  color: var(--grey-b2);
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+}
+
+.agent-cards-busy {
+  opacity: 0.55;
+  transition: opacity $transition-fast;
+}
+
+.agent-card {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  padding: $space-4;
+
+  & + & {
+    border-top: $border-width solid var(--grey-b4);
+  }
+}
+
+.agent-card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+}
+
+.agent-card-contact {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+  min-width: 0;
+
+  .cell-secondary {
+    overflow-wrap: anywhere; // full email on a phone, broken at any character, never cut mid-word with "…"
+  }
+}
+
+.agent-card-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-1 $space-4;
+  margin: 0;
+  color: var(--grey-b2);
+  font-size: $font-size-xs;
+
+  div {
+    display: flex;
+    gap: $space-1;
+  }
+
+  dt {
+    color: var(--grey-b3);
+  }
+
+  dd {
+    margin: 0;
+    color: var(--grey-b1);
+    font-weight: $font-weight-semibold;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.agent-card-actions {
+  display: flex;
+  gap: $space-2;
+
+  .p-button {
+    flex: 1 1 0;
+    justify-content: center;
+    padding-inline: $space-2;
+  }
+}

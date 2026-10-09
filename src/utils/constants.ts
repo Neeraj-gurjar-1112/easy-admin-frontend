@@ -70,3 +70,14 @@ export const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
     items: [{ key: "delivery-agents", title: "Delivery agents", path: "/delivery-agents/list", icon: "pi pi-truck" }],
   },
 ];
+
+// Sort choices for the phone card list (the table sorts from its column headers instead).
+// Value = "<field>:<order>" so one Dropdown carries both.
+export const AGENT_SORT_OPTIONS = [
+  { label: "Newest first", value: "created_at:desc" },
+  { label: "Oldest first", value: "created_at:asc" },
+  { label: "Highest rating", value: "rating:desc" },
+  { label: "Most completed", value: "completed_orders:desc" },
+  { label: "Most assigned", value: "assigned_orders:desc" },
+  { label: "Name A–Z", value: "name:asc" },
+] as const;

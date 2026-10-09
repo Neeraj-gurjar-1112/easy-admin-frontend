@@ -83,7 +83,6 @@ img {
 
 // Buttons take their width from padding (WM); phones get a comfortable tap target
 .p-button {
-  min-height: $touch-target;
   padding-inline: $space-4;
 
   &.p-button-icon-only {
@@ -103,7 +102,212 @@ img {
   }
 }
 
-.p-dropdown,
-.p-inputtext {
-  min-height: $touch-target;
+// ---- PrimeReact theme → design tokens ------------------------------------------------------
+// The Lara theme ships its own blue (#3b82f6) and green (#22c55e); both fail 4.5:1 with white
+// text / on white. Every interactive colour below comes from the palette instead, so the build
+// uses exactly the board's values: primary $blue-b1, hover $blue-b2, success $green-b1.
+// States (also on the board, artboard 14): hover, keyboard focus (2px ring), disabled.
+
+// Scoped under :root (+1 specificity) so these win over the theme <link> whatever the load order.
+:root {
+  // Buttons — one height, 14px semibold label
+  .p-button {
+    height: $control-height;
+    padding-block: 0;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    background: var(--blue-b1);
+    border-color: var(--blue-b1);
+    color: var(--grey-b7); // white in day, dark surface in night (contrast on the night blue)
+
+    &:enabled:hover {
+      background: var(--blue-b2);
+      border-color: var(--blue-b2);
+      color: var(--grey-b7);
+    }
+
+    &:focus {
+      box-shadow: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--blue-b1);
+      outline-offset: 2px;
+    }
+
+    &.p-button-outlined {
+      background: var(--grey-b7);
+      border-color: var(--grey-b8);
+      color: var(--grey-b2);
+
+      &:enabled:hover {
+        background: var(--grey-b5);
+        border-color: var(--grey-b3);
+        color: var(--grey-b1);
+      }
+    }
+
+    &.p-button-text {
+      background: transparent;
+      border-color: transparent;
+      color: var(--blue-b1);
+
+      &:enabled:hover {
+        background: var(--grey-b5);
+        border-color: transparent;
+        color: var(--blue-b2);
+      }
+
+      &.p-button-secondary {
+        color: var(--grey-b2);
+
+        &:enabled:hover {
+          color: var(--grey-b1);
+        }
+      }
+
+      &.p-button-success {
+        color: var(--green-b1);
+
+        &:enabled:hover {
+          background: var(--green-b2);
+          color: var(--green-b1);
+        }
+      }
+
+      &.p-button-danger {
+        color: var(--red-b1);
+
+        &:enabled:hover {
+          background: var(--red-b2);
+          color: var(--red-b1);
+        }
+      }
+    }
+
+    // Filled severities
+    &.p-button-success:not(.p-button-text):not(.p-button-outlined) {
+      background: var(--green-b1);
+      border-color: var(--green-b1);
+    }
+
+    &.p-button-danger:not(.p-button-text):not(.p-button-outlined) {
+      background: var(--red-b1);
+      border-color: var(--red-b1);
+    }
+
+    &.p-button-danger.p-button-outlined {
+      border-color: var(--red-b1);
+      color: var(--red-b1);
+
+      &:enabled:hover {
+        background: var(--red-b2);
+      }
+    }
+
+    // Disabled: a visible state of its own, not a 60% fade of the enabled colour
+    &:disabled {
+      opacity: 1;
+      background: var(--grey-b5);
+      border-color: var(--grey-b4);
+      color: var(--grey-b3);
+    }
+
+    &.p-button-text:disabled {
+      background: transparent;
+      border-color: transparent;
+    }
+  }
+
+  // Text inputs and dropdowns — same 44px height and 14px text as the board
+  .p-inputtext {
+    height: $control-height;
+    padding-block: 0;
+    padding-inline: $space-3;
+    font-size: $font-size-sm;
+    color: var(--grey-b1);
+    background: var(--grey-b7);
+    border-color: var(--grey-b8);
+
+    &::placeholder {
+      color: var(--grey-b3);
+    }
+  }
+
+  .p-input-icon-left > .p-inputtext {
+    padding-inline-start: $space-10;
+  }
+
+  .p-dropdown {
+    height: $control-height;
+    align-items: center;
+    background: var(--grey-b7);
+    border-color: var(--grey-b8);
+
+    .p-dropdown-label {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      padding-block: 0;
+      padding-inline: $space-3;
+      font-size: $font-size-sm;
+      color: var(--grey-b1);
+      border: 0;
+
+      &.p-placeholder {
+        color: var(--grey-b3);
+      }
+    }
+
+    .p-dropdown-trigger {
+      color: var(--grey-b3);
+    }
+  }
+
+  .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+    font-size: $font-size-sm;
+
+    &.p-highlight {
+      background: var(--blue-b3);
+      color: var(--blue-b2);
+    }
+  }
+
+  // Hover / focus / invalid / disabled for every field
+  .p-inputtext:enabled:hover,
+  .p-dropdown:not(.p-disabled):hover {
+    border-color: var(--grey-b3);
+  }
+
+  .p-inputtext:enabled:focus,
+  .p-dropdown:not(.p-disabled).p-focus {
+    border-color: var(--blue-b1);
+    box-shadow: 0 0 0 1px var(--blue-b1);
+    outline: none;
+  }
+
+  .p-inputtext.p-invalid,
+  .p-dropdown.p-invalid,
+  .p-invalid > .p-inputtext {
+    border-color: var(--red-b1);
+  }
+
+  .p-inputtext:disabled,
+  .p-dropdown.p-disabled {
+    opacity: 1;
+    background: var(--grey-b5);
+    color: var(--grey-b3);
+    border-color: var(--grey-b4);
+  }
+
+  // Toggle, paginator — palette colours instead of the theme blue
+  .p-inputswitch.p-highlight .p-inputswitch-slider {
+    background: var(--blue-b1);
+  }
+
+  .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+    background: var(--blue-b3);
+    border-color: var(--blue-b3);
+    color: var(--blue-b2);
+  }
 }
