@@ -123,6 +123,45 @@ test.describe("Delivery agents — create form validation (nothing is saved)", (
   });
 });
 
+test.describe("Delivery agents — layout (design review)", () => {
+  test("at 1440 the whole table fits its card and the actions stay visible", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(LIST);
+    await expect(rows(page).first()).toBeVisible();
+
+    const fit = await page.evaluate(() => {
+      const card = document.querySelector(".table-card")!.getBoundingClientRect();
+      const table = document.querySelector(".p-datatable-table")!.getBoundingClientRect();
+      const joined = document.querySelector(".p-datatable-tbody td.col-joined") as HTMLElement;
+      return { overflow: Math.round(table.right - card.right), joinedOneLine: joined.scrollWidth <= joined.clientWidth };
+    });
+    expect(fit.overflow).toBeLessThanOrEqual(0);
+    expect(fit.joinedOneLine).toBe(true);
+    await expect(rows(page).first().getByRole("button", { name: /^View/ })).toBeInViewport();
+  });
+
+  test("below 768 the list shows one card per agent with status and actions", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 800 });
+    await page.goto(LIST);
+    const cards = page.locator(".agent-card");
+    await expect(cards.first()).toBeVisible();
+    await expect(page.locator(".p-datatable-tbody tr").first()).toBeHidden();
+
+    const first = cards.first();
+    await expect(first.locator(".status-badge").first()).toBeVisible();
+    await expect(first.getByRole("button", { name: /^View/ })).toBeVisible();
+    await expect(first.getByRole("button", { name: /^(Approve|Suspend)/ })).toBeVisible();
+    await expect(first.getByRole("button", { name: /^Delete/ })).toBeVisible();
+
+    // Sort from the card toolbar (the table sorts from its headers instead)
+    const sorted = page.waitForResponse((res) => /delivery-agents\?.*sort=rating/.test(res.url()) && res.ok());
+    await page.locator(".agent-cards-toolbar .p-dropdown").click();
+    await page.getByRole("option", { name: "Highest rating" }).click();
+    await sorted;
+    await expect(cards.first()).toContainText("4.9");
+  });
+});
+
 test.describe("Delivery agents — negative paths (nothing is saved)", () => {
   test("cancelling the delete dialog keeps the row", async ({ page }) => {
     await page.goto(LIST);

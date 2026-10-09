@@ -94,7 +94,12 @@ test.describe.serial("Delivery agents — create → list → edit → delete @m
   test("delete removes the agent and the list no longer finds it", async ({ page }) => {
     await page.goto("/delivery-agents/list");
     await page.getByLabel("Search delivery agents").fill(agent.email);
-    await page.locator(".p-datatable-tbody tr").first().getByRole("button", { name: /^Delete/ }).click();
+    // Wait until the search result is on screen: the previous rows stay visible while it loads,
+    // and clicking too early would delete whichever agent happened to be first.
+    const row = page.locator(".p-datatable-tbody tr").first();
+    await expect(row).toContainText(agent.renamed);
+    await expect(page.locator(".p-datatable-tbody tr")).toHaveCount(1);
+    await row.getByRole("button", { name: /^Delete/ }).click();
     await page.getByRole("dialog").getByRole("button", { name: "Delete" }).click(); // confirm dialog
 
     await expect(page.getByText("Agent deleted")).toBeVisible();

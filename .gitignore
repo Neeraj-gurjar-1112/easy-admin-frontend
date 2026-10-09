@@ -56,3 +56,6 @@ next-env.d.ts
 
 # playwright working output (reports are published from public/qa instead)
 /playwright-report-*/
+
+# measure-list.mjs output
+scratch-*.png

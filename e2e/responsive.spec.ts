@@ -10,9 +10,12 @@ const WM_WIDTHS = [1920, 1600, 1440, 1366, 1280, 1024, 991, 768, 640, 480, 375];
 const VIEWPORT_HEIGHT = 900;
 
 /** Click "View" on the first row and wait for the details page. Retries once if the click landed before hydration. */
+// The list renders a table from 768px up and one card per agent below it; use whichever is visible.
+const firstItem = (page: Page) => page.locator(".p-datatable-tbody tr, .agent-card").filter({ visible: true }).first();
+
 const openFirstRowDetails = async (page: Page) => {
   await expect(async () => {
-    await page.locator(".p-datatable-tbody tr").first().getByRole("button", { name: /^View/ }).click();
+    await firstItem(page).getByRole("button", { name: /^View/ }).click();
     await expect(page).toHaveURL(/\/delivery-agents\/details\//, { timeout: 8_000 });
   }).toPass({ timeout: 60_000 });
 };
@@ -27,14 +30,14 @@ const SCREENS: Screen[] = [
     name: "delivery-agents-list",
     open: async (page) => {
       await page.goto("/delivery-agents/list");
-      await page.locator(".p-datatable-tbody tr").first().waitFor({ state: "visible" });
+      await firstItem(page).waitFor({ state: "visible" });
     },
   },
   {
     name: "delivery-agents-details",
     open: async (page) => {
       await page.goto("/delivery-agents/list");
-      await page.locator(".p-datatable-tbody tr").first().waitFor({ state: "visible" });
+      await firstItem(page).waitFor({ state: "visible" });
       await openFirstRowDetails(page);
       await page.locator(".agent-hero").waitFor({ state: "visible" });
     },
@@ -50,7 +53,7 @@ const SCREENS: Screen[] = [
     name: "delivery-agents-edit",
     open: async (page) => {
       await page.goto("/delivery-agents/list");
-      await page.locator(".p-datatable-tbody tr").first().waitFor({ state: "visible" });
+      await firstItem(page).waitFor({ state: "visible" });
       await openFirstRowDetails(page);
       await expect(async () => {
         await page.locator(".agent-hero").getByRole("button", { name: "Edit" }).click();
