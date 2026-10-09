@@ -10,7 +10,20 @@ if (!PASSWORD) {
   throw new Error("Set E2E_ADMIN_PASSWORD (the seed admin password) before running Playwright. See README → Checks.");
 }
 
-setup("admin login", async ({ page }) => {
+// A hosted free API (Render) sleeps when idle and needs up to a minute to wake up.
+// Wake it before logging in so the first request does not fail with "Cannot reach the server".
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.E2E_API_BASE_URL || "";
+
+setup("admin login", async ({ page, request }) => {
+  setup.setTimeout(240_000);
+  if (API_BASE) {
+    const health = new URL("/api/health", API_BASE).toString();
+    await expect(async () => {
+      const res = await request.get(health, { timeout: 30_000 });
+      expect(res.ok()).toBeTruthy();
+    }).toPass({ timeout: 180_000 });
+  }
+
   await page.goto("/login");
   // Generous waits: on a freshly started dev server the first compile of a route can take a while
   await expect(page.getByRole("heading", { name: "Easy Admin" })).toBeVisible({ timeout: 60_000 });

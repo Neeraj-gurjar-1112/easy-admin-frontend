@@ -50,9 +50,13 @@ test.describe("Delivery agents — list", () => {
     await page.goto(LIST);
     await expect(rows(page).first()).toBeVisible();
 
+    // Wait for the filtered response itself: the table keeps the previous rows on screen while the
+    // next page loads (keepPreviousData), so counting right after the click can read the old rows.
+    const filtered = page.waitForResponse((res) => /delivery-agents\?.*approval=/.test(res.url()) && res.ok());
     await pickDropdown(page, "Any approval", "Pending approval");
+    await filtered;
 
-    await expect(rows(page).first()).toBeVisible();
+    await expect(rows(page).first()).toContainText("Pending");
     const count = await rows(page).count();
     for (let i = 0; i < count; i += 1) {
       await expect(rows(page).nth(i)).toContainText("Pending");
