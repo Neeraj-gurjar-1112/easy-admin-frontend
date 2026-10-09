@@ -6,9 +6,9 @@ Format: WM | Report (10 parts from training Step 8). Written as a hand-over to Q
 
 | | |
 |---|---|
-| Frontend repo / branch | https://github.com/Neeraj-gurjar-1112/easy-admin-frontend · `main` · **code under test: commit `ec4f7a6`** (the deployed build is the commit right after it on `main`, which adds only this report, the test cases, screenshots and the HTML reports) |
-| Backend repo / branch | https://github.com/Neeraj-gurjar-1112/Easy-Backend-v2 · `master` · commit `b71b508` (delivery-agents module, seed, tests, render.yaml) |
-| Demo | Frontend: https://easy-admin-frontend.vercel.app (demo mode: in-browser data, survives reload, "Reset demo data" in the top bar; no login needed) · Backend for the real-API flow: local `http://localhost:8080` (see part 6) |
+| Frontend repo / branch | https://github.com/Neeraj-gurjar-1112/easy-admin-frontend · `main` · **code under test: commit `8786eae`** (the deployed build is the commit right after it on `main`, which adds only this report, the test cases, screenshots and the HTML reports) |
+| Backend repo / branch | https://github.com/Neeraj-gurjar-1112/Easy-Backend-v2 · `master` · deployed commit `1d39999` (delivery-agents module, seed, tests, render.yaml) |
+| Demo | Frontend: https://easy-admin-frontend.vercel.app (real API, login `admin@example.com` / `QaDemo@2026`) · Backend: https://easy-backend-v2.onrender.com/api/admin (Render free, in-memory database reseeded on every boot; first request after idle can take ~1 min) |
 | Date | 2026-10-08 |
 
 ## 2. TL tasks covered
@@ -93,7 +93,7 @@ Full case list with IDs: `docs/test-cases.md` (51 cases: 34 positive, 17 negativ
 
 - **Single admin role.** Easy's admin API has one role; "other roles cannot open the page" is covered only by the unauthenticated redirect and the API's 401.
 - **Recent orders** are empty for seeded agents (no seeded orders). The table renders with real data from `GET /delivery-agents/:id`.
-- **Deployed demo** of the frontend runs on the in-memory mock until the backend is hosted. The backend repo ships `render.yaml` (in-memory database + seed on boot, no external services); once it is up, the switch is two Vercel variables (`NEXT_PUBLIC_API_BASE_URL`, `NEXT_PUBLIC_USE_MOCK=0`) and a redeploy, and the Playwright suites run against the hosted URL with `PLAYWRIGHT_BASE_URL`.
+- **Hosted backend** is a Render free instance with an in-memory database: it sleeps after ~15 min idle, the first request then takes up to a minute, and every restart reseeds the 32 agents + admin (changes made during review are lost on restart). The Playwright login setup wakes the API before signing in.
 - **Backend test suite** (`npm test` in Easy-Backend-v2) is red for pre-existing reasons documented in `docs/TEST-STATUS.md`; the new `admin_delivery_agents_v2.test.js` file passes on its own.
 - Not covered: concurrent edits, file uploads (none on this entity), Flutter partner app behaviour after admin changes.
 
@@ -104,8 +104,8 @@ Frontend
   npm run type-check     → 0 errors
   npm run lint           → 0 errors, 0 warnings
   npm run build          → ✓ Compiled successfully · routes: / · /login · /delivery-agents/list · /create · /details/[id] · /edit/[id]
-  npm run test:e2e       → 69 passed (2.8m) — auth.setup 1 + delivery-agents.spec 13 (10 happy-path/state + 3 negative: cancelled delete, edit validation, unknown edit id) + responsive.spec 55 (5 screens × 11 widths) · HTML report https://easy-admin-frontend.vercel.app/qa/e2e-report/
-  npm run test:e2e:mutations → 7 passed (19.7s) — auth.setup 1 + create → duplicate-email rejection (field error under Email) → list search → edit → approve → delete · HTML report https://easy-admin-frontend.vercel.app/qa/mutation-report/
+  npm run test:e2e       → 69 passed (2.9m) against the deployed demo (PLAYWRIGHT_BASE_URL=https://easy-admin-frontend.vercel.app) — auth.setup 1 + delivery-agents.spec 13 (10 happy-path/state + 3 negative: cancelled delete, edit validation, unknown edit id) + responsive.spec 55 (5 screens × 11 widths) · HTML report https://easy-admin-frontend.vercel.app/qa/e2e-report/
+  npm run test:e2e:mutations → 7 passed (22.3s) against the deployed demo — auth.setup 1 + create → duplicate-email rejection (field error under Email) → list search → edit → approve → delete · HTML report https://easy-admin-frontend.vercel.app/qa/mutation-report/
 
 Backend (Easy-Backend-v2)
   npx jest tests/admin_delivery_agents_v2.test.js → 12 passed, 12 total
