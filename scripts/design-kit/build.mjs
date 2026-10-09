@@ -6,7 +6,7 @@
 // file in one drag-and-drop. Every value here is a token from src/styles/_variables.scss.
 //
 //   node scripts/design-kit/build.mjs   → public/design/*.svg + public/design/index.html
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -106,7 +106,11 @@ function button(x, y, w, label, { variant = "primary", iconName, iconOnly = fals
     dangerOutlined: { fill: C.white, stroke: C.red1, fg: C.red1 },
     text: { fill: "none", stroke: "none", fg: C.blue1 },
     dangerText: { fill: "none", stroke: "none", fg: C.red1 },
-    disabled: { fill: C.white, stroke: C.grey4, fg: C.grey8 },
+    disabled: { fill: C.grey5, stroke: C.grey4, fg: C.grey3 },
+    primaryHover: { fill: C.blue2, stroke: C.blue2, fg: C.white },
+    outlinedHover: { fill: C.grey5, stroke: C.grey3, fg: C.grey1 },
+    successText: { fill: "none", stroke: "none", fg: C.green1 },
+    greyText: { fill: "none", stroke: "none", fg: C.grey2 },
   }[variant];
   const parts = [rect(x, y, w, h, { fill: styles.fill, stroke: styles.stroke === "none" ? undefined : styles.stroke, rx: R.sm })];
   if (iconOnly) {
@@ -121,8 +125,8 @@ function button(x, y, w, label, { variant = "primary", iconName, iconOnly = fals
   return group(parts);
 }
 
-function input(x, y, w, placeholder, { leadIcon, trailChevron, value, h = SIZE.touch } = {}) {
-  const parts = [rect(x, y, w, h, { fill: C.white, stroke: C.grey8, rx: R.sm })];
+function input(x, y, w, placeholder, { leadIcon, trailChevron, value, h = SIZE.touch, stroke = C.grey8, sw = 1, disabled = false } = {}) {
+  const parts = [rect(x, y, w, h, { fill: disabled ? C.grey5 : C.white, stroke: disabled ? C.grey4 : stroke, rx: R.sm, sw })];
   let tx = x + S[3];
   if (leadIcon) {
     parts.push(icon[leadIcon](x + S[3], y + h / 2 - 8, C.grey3));
@@ -314,98 +318,231 @@ function filterBar(x, y, w, mode) {
   return { svg: group(parts), bottom: y + h };
 }
 
+// Column widths come from the token file itself ($agent-table-columns in _variables.scss), so
+// the board and the build cannot drift apart. Padding: 8px inside each column, 16px on the outer edges.
+const SCSS = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "..", "..", "src", "styles", "_variables.scss"), "utf8");
+const COLUMN_WIDTHS = Object.fromEntries(
+  [...SCSS.slice(SCSS.indexOf("$agent-table-columns")).split(");")[0].matchAll(/'(\w+)':\s*(\d+)px/g)].map((m) => [m[1], Number(m[2])]),
+);
+const ICON_BTN_DESKTOP = Number(SCSS.match(/\$icon-button-size-desktop:\s*(\d+)px/)[1]);
 const COLS = [
-  ["Agent", 190], ["Contact", 210], ["Vehicle", 90], ["Approval", 120], ["Status", 100], ["Assigned", 90, "right"], ["Completed", 100, "right"], ["Rating", 80, "right"], ["Joined", 110], ["", 130, "right"],
-];
+  ["Agent", "agent"], ["Contact", "contact"], ["Vehicle", "vehicle"], ["Approval", "approval"], ["Status", "status"],
+  ["Assigned", "assigned", "right", true], ["Completed", "completed", "right", true], ["Rating", "rating", "right", true], ["Joined", "joined", "left", true], ["", "actions", "right"],
+].map(([label, key, align = "left", sortable = false]) => ({ label: key === "agent" ? "Agent" : label, key, w: COLUMN_WIDTHS[key], align, sortable: sortable || key === "agent" }));
+const TABLE_W = COLS.reduce((sum, c) => sum + c.w, 0);
+const CELL_PAD = 8;
 
-function tableCard(x, y, w, { state = "filled", clipped = false, rowCount = 10 } = {}) {
+const sortIcon = (x, y, c) => group([line(x + 3, y + 2, x + 3, y + 12, c, 1.6), `<polyline points="${x},${y + 5} ${x + 3},${y + 2} ${x + 6},${y + 5}" fill="none" stroke="${c}" stroke-width="1.6"/>`, line(x + 9, y + 2, x + 9, y + 12, c, 1.6), `<polyline points="${x + 6},${y + 9} ${x + 9},${y + 12} ${x + 12},${y + 9}" fill="none" stroke="${c}" stroke-width="1.6"/>`]);
+const clipText = (str, maxW, size) => {
+  if (textWidth(str, size) <= maxW) return str;
+  let s = String(str);
+  while (s.length > 1 && textWidth(`${s}…`, size) > maxW) s = s.slice(0, -1);
+  return `${s}…`;
+};
+
+// One table row's cells, drawn from column boundaries (left edge of column i = x + sum of previous widths)
+function tableRowCells(x, ry, rowH, i, { loading = false } = {}) {
+  const parts = [];
+  let cx = x;
+  const lead = (ci) => (ci === 0 ? S[4] : CELL_PAD);
+  const trail = (ci) => (ci === COLS.length - 1 ? S[4] : CELL_PAD);
+  const mid = ry + rowH / 2;
+  const [name, phone, email, vehicle, approved, presence, assigned, completed, rating, joined] = ROWS[i % ROWS.length];
+  COLS.forEach((col, ci) => {
+    const left = cx + lead(ci);
+    const right = cx + col.w - trail(ci);
+    const inner = right - left;
+    if (loading) {
+      if (col.key !== "actions") parts.push(skeleton(left, mid - 7, Math.max(32, inner - 16)));
+      cx += col.w;
+      return;
+    }
+    switch (col.key) {
+      case "agent":
+        parts.push(avatar(left, mid - SIZE.avatar / 2, name));
+        parts.push(text(left + SIZE.avatar + S[3], mid - 10, clipText(name, inner - SIZE.avatar - S[3], F.sm), { size: F.sm, weight: 600 }));
+        parts.push(text(left + SIZE.avatar + S[3], mid + 10, `…${(6743 + i).toString(16)}c7`, { size: F.xs, fill: C.grey2 }));
+        break;
+      case "contact":
+        parts.push(text(left, mid - 10, phone, { size: F.sm, weight: 600 }));
+        parts.push(text(left, mid + 10, clipText(email, inner, F.xs), { size: F.xs, fill: C.grey2 }));
+        break;
+      case "vehicle":
+        parts.push(badge(left, mid - 11, vehicle, "info"));
+        break;
+      case "approval":
+        parts.push(approved ? badge(left, mid - 11, "Approved", "success", { iconName: "check" }) : badge(left, mid - 11, "Pending", "warning", { iconName: "clock" }));
+        break;
+      case "status": {
+        const [pl, pt] = PRESENCE[presence];
+        parts.push(badge(left, mid - 11, pl, pt, { dot: true }));
+        break;
+      }
+      case "assigned":
+        parts.push(text(right, mid + 0.5, fmt(assigned), { size: F.sm, anchor: "end" }));
+        break;
+      case "completed":
+        parts.push(text(right, mid + 0.5, fmt(completed), { size: F.sm, anchor: "end" }));
+        break;
+      case "rating":
+        if (rating > 0) {
+          parts.push(icon.star(right - 40, mid - 7, C.yellow1, 7));
+          parts.push(text(right, mid + 0.5, rating.toFixed(1), { size: F.sm, anchor: "end" }));
+        } else parts.push(text(right, mid + 0.5, "-", { size: F.sm, anchor: "end" }));
+        break;
+      case "joined":
+        parts.push(text(left, mid + 0.5, joined, { size: F.sm }));
+        break;
+      case "actions": {
+        const b = ICON_BTN_DESKTOP;
+        let ax = right - b * 3 - S[1] * 2;
+        parts.push(icon.eye(ax + b / 2 - 8, mid - 8, C.grey2));
+        ax += b + S[1];
+        parts.push(approved ? icon.ban(ax + b / 2 - 8, mid - 8, C.red1) : icon.check(ax + b / 2 - 8, mid - 8, C.green1));
+        ax += b + S[1];
+        parts.push(icon.trash(ax + b / 2 - 8, mid - 8, C.grey2));
+        break;
+      }
+      default:
+    }
+    cx += col.w;
+  });
+  return group(parts);
+}
+
+function tableHeader(x, y, headH) {
+  const parts = [rect(x, y, TABLE_W, headH, { fill: C.grey5 }), line(x, y + headH, x + TABLE_W, y + headH, C.grey4)];
+  let cx = x;
+  COLS.forEach((col, ci) => {
+    const left = cx + (ci === 0 ? S[4] : CELL_PAD);
+    const right = cx + col.w - (ci === COLS.length - 1 ? S[4] : CELL_PAD);
+    if (col.label) {
+      const lw = textWidth(col.label.toUpperCase(), F.xs) + 4;
+      const tx = col.align === "right" ? right - (col.sortable ? 16 : 0) : left;
+      parts.push(text(tx, y + headH / 2 + 0.5, col.label, { size: F.xs, weight: 600, fill: C.grey2, upper: true, spacing: 0.24, anchor: col.align === "right" ? "end" : "start" }));
+      if (col.sortable) parts.push(sortIcon(col.align === "right" ? right - 12 : left + lw, y + headH / 2 - 7, col.key === "joined" ? C.blue1 : C.grey3));
+    }
+    cx += col.w;
+  });
+  return group(parts);
+}
+
+function pagerFooter(x, fy, w, footH, { phone = false } = {}) {
+  const parts = [line(x, fy, x + w, fy, C.grey4)];
+  parts.push(text(x + S[4], fy + footH / 2 + 0.5, "Total", { size: F.sm, fill: C.grey2 }));
+  parts.push(text(x + S[4] + 44, fy + footH / 2 + 0.5, "32", { size: F.sm, weight: 700 }));
+  const pagerRight = x + w - S[4];
+  if (!phone) {
+    parts.push(rect(pagerRight - 76, fy + footH / 2 - 22, 76, 44, { fill: C.white, stroke: C.grey8, rx: R.sm }));
+    parts.push(text(pagerRight - 56, fy + footH / 2 + 0.5, "10", { size: F.sm }));
+    parts.push(icon.chevron(pagerRight - 28, fy + footH / 2 - 7, C.grey3));
+    let px = pagerRight - 76 - S[3];
+    ["»", "›", "4", "3", "2", "1", "‹", "«"].forEach((p) => {
+      px -= 40;
+      if (p === "1") parts.push(circle(px + 20, fy + footH / 2, 20, C.blue3));
+      parts.push(text(px + 20, fy + footH / 2 + 0.5, p, { size: F.sm, fill: p === "1" ? C.blue2 : C.grey2, anchor: "middle", weight: p === "1" ? 600 : 400 }));
+    });
+  } else {
+    let px = x + w / 2 - 120;
+    ["‹", "1", "2", "3", "4", "›"].forEach((p) => {
+      if (p === "1") parts.push(circle(px + 20, fy + footH / 2, 20, C.blue3));
+      parts.push(text(px + 20, fy + footH / 2 + 0.5, p, { size: F.sm, fill: p === "1" ? C.blue2 : C.grey2, anchor: "middle", weight: p === "1" ? 600 : 400 }));
+      px += 40;
+    });
+  }
+  return group(parts);
+}
+
+// Phone list: one card per agent (badges, full contact, numbers, labelled actions)
+function agentCardsList(x, y, w, rowCount = 4) {
+  const parts = [];
+  const toolbarH = SIZE.touch + S[4] * 2;
+  parts.push(text(x + S[4], y + toolbarH / 2 + 0.5, "Sort by", { size: F.sm, weight: 500, fill: C.grey2 }));
+  parts.push(input(x + S[4] + 64, y + S[4], w - S[4] * 2 - 64, "Newest first", { trailChevron: true, value: "Newest first" }));
+  parts.push(line(x, y + toolbarH, x + w, y + toolbarH, C.grey4));
+  let cy = y + toolbarH;
+  const cardH = 246;
+  for (let i = 0; i < rowCount; i += 1) {
+    const [name, phone, email, vehicle, approved, presence, , completed, rating, joined] = ROWS[i];
+    const px = x + S[4];
+    if (i > 0) parts.push(line(x, cy, x + w, cy, C.grey4));
+    parts.push(avatar(px, cy + S[4], name));
+    parts.push(text(px + SIZE.avatar + S[3], cy + S[4] + 8, name, { size: F.sm, weight: 600 }));
+    parts.push(text(px + SIZE.avatar + S[3], cy + S[4] + 28, `…${(6743 + i).toString(16)}c7`, { size: F.xs, fill: C.grey2 }));
+    let bx = px;
+    const by = cy + S[4] + SIZE.avatar + S[3];
+    const b1 = badge(bx, by, vehicle, "info");
+    parts.push(b1);
+    bx += 16 + textWidth(vehicle, F.xs) + S[2];
+    parts.push(approved ? badge(bx, by, "Approved", "success", { iconName: "check" }) : badge(bx, by, "Pending", "warning", { iconName: "clock" }));
+    bx += 16 + 19 + textWidth(approved ? "Approved" : "Pending", F.xs) + S[2];
+    const [pl, pt] = PRESENCE[presence];
+    parts.push(badge(bx, by, pl, pt, { dot: true }));
+    const ty = by + 22 + S[3];
+    parts.push(text(px, ty + 8, phone, { size: F.sm, weight: 600 }));
+    parts.push(text(px, ty + 28, email, { size: F.xs, fill: C.grey2 }));
+    const sy = ty + 52;
+    const stats = [["Completed", fmt(completed)], ["Rating", rating > 0 ? rating.toFixed(1) : "-"], ["Joined", joined]];
+    let sx = px;
+    stats.forEach(([k, v]) => {
+      parts.push(text(sx, sy, k, { size: F.xs, fill: C.grey3 }));
+      sx += textWidth(k, F.xs) + S[1];
+      parts.push(text(sx, sy, v, { size: F.xs, weight: 600 }));
+      sx += textWidth(v, F.xs) + S[4];
+    });
+    const ay = sy + S[4];
+    const aw = (w - S[4] * 2 - S[2] * 2) / 3;
+    parts.push(button(px, ay, aw, "View", { variant: "outlined", iconName: "eye" }));
+    parts.push(approved ? button(px + aw + S[2], ay, aw, "Suspend", { variant: "dangerText", iconName: "ban" }) : button(px + aw + S[2], ay, aw, "Approve", { variant: "successText", iconName: "check" }));
+    parts.push(button(px + (aw + S[2]) * 2, ay, aw, "Delete", { variant: "greyText", iconName: "trash" }));
+    cy += cardH;
+  }
+  return { svg: group(parts), bottom: cy };
+}
+
+function tableCard(x, y, w, { state = "filled", mode = "desktop", rowCount = 10 } = {}) {
   const headH = 48;
-  const rowH = 73;
+  const rowH = 68;
   const footH = 72;
   const parts = [];
-  let h;
-  if (state === "filled" || state === "loading") h = headH + rowH * rowCount + footH;
-  else h = 300;
+  if (mode === "phone" && state === "filled") {
+    const list = agentCardsList(x, y, w);
+    const h = list.bottom - y + footH + 32;
+    parts.push(card(x, y, w, h));
+    parts.push(list.svg);
+    parts.push(pagerFooter(x, list.bottom, w, footH + 32, { phone: true }));
+    return { svg: group(parts), bottom: y + h };
+  }
+  const h = state === "filled" || state === "loading" ? headH + rowH * rowCount + footH : 300;
   parts.push(card(x, y, w, h));
-  // clip everything inside the card (table wider than a phone/tablet card scrolls inside)
   const clipId = `clip${Math.round(x + y + w)}`;
   parts.push(`<defs><clipPath id="${clipId}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${R.lg}"/></clipPath></defs>`);
   const inner = [];
   if (state === "filled" || state === "loading") {
-    inner.push(rect(x, y, Math.max(w, 1220), headH, { fill: C.grey5 }));
-    inner.push(line(x, y + headH, x + Math.max(w, 1220), y + headH, C.grey4));
-    let cx = x + S[4];
-    COLS.forEach(([label, cw, align]) => {
-      const tx = align === "right" ? cx + cw - S[4] : cx;
-      inner.push(text(tx, y + headH / 2 + 0.5, label, { size: F.xs, weight: 600, fill: C.grey2, upper: true, spacing: 0.4, anchor: align === "right" ? "end" : "start" }));
-      cx += cw;
-    });
+    // A table wider than the card scrolls inside it; the actions column is pinned to the right edge
+    const pinned = TABLE_W > w;
+    inner.push(tableHeader(x, y, headH));
     for (let i = 0; i < rowCount; i += 1) {
       const ry = y + headH + i * rowH;
-      if (i > 0) inner.push(line(x, ry, x + Math.max(w, 1220), ry, C.grey4));
-      cx = x + S[4];
-      if (state === "loading") {
-        COLS.forEach(([, cw]) => {
-          inner.push(skeleton(cx, ry + rowH / 2 - 7, Math.max(40, cw - 40)));
-          cx += cw;
-        });
-        continue;
+      if (i > 0) inner.push(line(x, ry, x + TABLE_W, ry, C.grey4));
+      inner.push(tableRowCells(x, ry, rowH, i, { loading: state === "loading" }));
+    }
+    if (pinned) {
+      const aw = COLUMN_WIDTHS.actions;
+      const ax = x + w - aw;
+      inner.push(rect(ax, y, aw, headH, { fill: C.grey5 }));
+      inner.push(rect(ax, y + headH, aw, rowH * rowCount, { fill: C.white }));
+      inner.push(line(ax, y, ax, y + headH + rowH * rowCount, C.grey4));
+      for (let i = 0; i < rowCount; i += 1) {
+        const ry = y + headH + i * rowH;
+        if (i > 0) inner.push(line(ax, ry, x + w, ry, C.grey4));
+        const shifted = tableRowCells(x - (TABLE_W - w), ry, rowH, i, { loading: state === "loading" });
+        inner.push(`<g clip-path="url(#${clipId}a)">${shifted}</g>`);
       }
-      const [name, phone, email, vehicle, approved, presence, assigned, completed, rating, joined] = ROWS[i % ROWS.length];
-      inner.push(avatar(cx, ry + rowH / 2 - SIZE.avatar / 2, name));
-      inner.push(text(cx + SIZE.avatar + S[3], ry + 27, name, { size: F.sm, weight: 600 }));
-      inner.push(text(cx + SIZE.avatar + S[3], ry + 47, `…${(6743 + i).toString(16)}c7`, { size: F.xs, fill: C.grey2 }));
-      cx += COLS[0][1];
-      inner.push(text(cx, ry + 27, phone, { size: F.sm, weight: 600 }));
-      inner.push(text(cx, ry + 47, email, { size: F.xs, fill: C.grey2 }));
-      cx += COLS[1][1];
-      inner.push(badge(cx, ry + rowH / 2 - 11, vehicle, "info"));
-      cx += COLS[2][1];
-      inner.push(approved ? badge(cx, ry + rowH / 2 - 11, "Approved", "success", { iconName: "check" }) : badge(cx, ry + rowH / 2 - 11, "Pending", "warning", { iconName: "clock" }));
-      cx += COLS[3][1];
-      const [pl, pt] = PRESENCE[presence];
-      inner.push(badge(cx, ry + rowH / 2 - 11, pl, pt, { dot: true }));
-      cx += COLS[4][1];
-      inner.push(text(cx + COLS[5][1] - S[4], ry + rowH / 2 + 0.5, fmt(assigned), { size: F.sm, anchor: "end" }));
-      cx += COLS[5][1];
-      inner.push(text(cx + COLS[6][1] - S[4], ry + rowH / 2 + 0.5, fmt(completed), { size: F.sm, anchor: "end" }));
-      cx += COLS[6][1];
-      if (rating > 0) {
-        inner.push(icon.star(cx + COLS[7][1] - S[4] - 44, ry + rowH / 2 - 7, C.yellow1, 7));
-        inner.push(text(cx + COLS[7][1] - S[4], ry + rowH / 2 + 0.5, rating.toFixed(1), { size: F.sm, anchor: "end" }));
-      } else inner.push(text(cx + COLS[7][1] - S[4], ry + rowH / 2 + 0.5, "-", { size: F.sm, anchor: "end" }));
-      cx += COLS[7][1];
-      inner.push(text(cx, ry + rowH / 2 + 0.5, joined, { size: F.sm }));
-      cx += COLS[8][1];
-      const ax = cx + COLS[9][1] - S[4] - 44 * 3;
-      inner.push(button(ax, ry + rowH / 2 - 22, SIZE.touch, "", { variant: "text", iconName: "eye", iconOnly: true }));
-      inner.push(approved ? group([rect(ax + 44, ry + rowH / 2 - 22, 44, 44, { fill: "none" }), icon.ban(ax + 44 + 14, ry + rowH / 2 - 8, C.red1)]) : group([icon.check(ax + 44 + 14, ry + rowH / 2 - 8, C.green1)]));
-      inner.push(icon.trash(ax + 88 + 14, ry + rowH / 2 - 8, C.grey3));
+      inner.push(`<defs><clipPath id="${clipId}a"><rect x="${ax + 1}" y="${y}" width="${aw - 1}" height="${h}"/></clipPath></defs>`);
+      inner.push(line(ax, y + headH, x + w, y + headH, C.grey4));
     }
-    // footer
-    const fy = y + headH + rowH * rowCount;
-    inner.push(line(x, fy, x + Math.max(w, 1220), fy, C.grey4));
-    inner.push(text(x + S[4], fy + footH / 2 + 0.5, "Total", { size: F.sm, fill: C.grey2 }));
-    inner.push(text(x + S[4] + 44, fy + footH / 2 + 0.5, "32", { size: F.sm, weight: 700 }));
-    const pagerRight = x + w - S[4];
-    if (w >= 700) {
-      inner.push(rect(pagerRight - 76, fy + footH / 2 - 22, 76, 44, { fill: C.white, stroke: C.grey8, rx: R.sm }));
-      inner.push(text(pagerRight - 56, fy + footH / 2 + 0.5, "10", { size: F.sm }));
-      inner.push(icon.chevron(pagerRight - 28, fy + footH / 2 - 7, C.grey3));
-      let px = pagerRight - 76 - S[3];
-      ["»", "›", "4", "3", "2", "1", "‹", "«"].forEach((p, i) => {
-        px -= 40;
-        if (p === "1") inner.push(circle(px + 20, fy + footH / 2, 20, C.blue3));
-        inner.push(text(px + 20, fy + footH / 2 + 0.5, p, { size: F.sm, fill: i === 5 ? C.blue2 : C.grey2, anchor: "middle", weight: p === "1" ? 600 : 400 }));
-      });
-    } else {
-      let px = x + w / 2 - 100;
-      ["‹", "1", "2", "3", "4", "›"].forEach((p) => {
-        if (p === "1") inner.push(circle(px + 20, fy + footH / 2 + 18, 20, C.blue3));
-        inner.push(text(px + 20, fy + footH / 2 + 18.5, p, { size: F.sm, fill: C.grey2, anchor: "middle", weight: p === "1" ? 600 : 400 }));
-        px += 40;
-      });
-    }
+    inner.push(pagerFooter(x, y + headH + rowH * rowCount, w, footH));
   } else if (state === "empty") {
     inner.push(icon.inbox(x + w / 2 - 20, y + 70, C.grey3));
     inner.push(text(x + w / 2, y + 140, "No agents match these filters", { size: F.lg, weight: 600, anchor: "middle" }));
@@ -418,8 +555,84 @@ function tableCard(x, y, w, { state = "filled", clipped = false, rowCount = 10 }
     inner.push(button(x + w / 2 - 70, y + 196, 140, "Try again", { variant: "outlined", iconName: "refresh" }));
   }
   parts.push(`<g clip-path="url(#${clipId})">${inner.join("\n")}</g>`);
-  if (clipped && (state === "filled" || state === "loading")) parts.push(text(x + w - S[3], y + headH / 2 + 0.5, "scrolls →", { size: F.xs, fill: C.grey3, anchor: "end" }));
   return { svg: group(parts), bottom: y + h };
+}
+
+// ---- states sheet (design review #6): hover, keyboard focus, disabled, invalid ------------------
+function statesScreen() {
+  const W = 1440;
+  const H = 760;
+  const parts = [rect(0, 0, W, H, { fill: C.grey6 })];
+  parts.push(text(48, 56, "Interaction states", { size: F["2xl"], weight: 700 }));
+  parts.push(text(48, 84, "Same tokens as the build: hover darkens to $blue-b2 or tints with $grey-b5; keyboard focus = 2px $blue-b1 ring (2px gap on buttons); disabled = $grey-b5 fill, $grey-b4 border, $grey-b3 text.", { size: F.sm, fill: C.grey2 }));
+  const colX = [48, 300, 552, 804, 1056];
+  const heads = ["Default", "Hover", "Focus (keyboard)", "Disabled", "Invalid / note"];
+  heads.forEach((hd, i) => parts.push(text(colX[i], 132, hd, { size: F.xs, weight: 600, fill: C.grey3, upper: true, spacing: 0.5 })));
+  const focusRing = (x, y, w, h, gap = 2) => rect(x - gap - 1, y - gap - 1, w + (gap + 1) * 2, h + (gap + 1) * 2, { fill: "none", stroke: C.blue1, rx: R.sm + gap + 1, sw: 2 });
+  let y = 156;
+  const rowLabel = (label) => parts.push(text(48, y - 12, label, { size: F.sm, weight: 600 }));
+  // primary button
+  y += 16;
+  rowLabel("Primary button");
+  parts.push(button(colX[0], y, 150, "Add agent", { iconName: "plus" }));
+  parts.push(button(colX[1], y, 150, "Add agent", { variant: "primaryHover", iconName: "plus" }));
+  parts.push(button(colX[2], y, 150, "Add agent", { iconName: "plus" }));
+  parts.push(focusRing(colX[2], y, 150, SIZE.touch));
+  parts.push(button(colX[3], y, 150, "Add agent", { variant: "disabled", iconName: "plus" }));
+  parts.push(text(colX[4], y + 22, "White on #2563eb = 5.2:1 · hover #1d4ed8 = 6.7:1", { size: F.xs, fill: C.grey2 }));
+  // outlined
+  y += 100;
+  rowLabel("Outlined button");
+  parts.push(button(colX[0], y, 150, "Reset", { variant: "outlined", iconName: "refresh" }));
+  parts.push(button(colX[1], y, 150, "Reset", { variant: "outlinedHover", iconName: "refresh" }));
+  parts.push(button(colX[2], y, 150, "Reset", { variant: "outlined", iconName: "refresh" }));
+  parts.push(focusRing(colX[2], y, 150, SIZE.touch));
+  parts.push(button(colX[3], y, 150, "Reset", { variant: "disabled", iconName: "refresh" }));
+  parts.push(text(colX[4], y + 22, "Reset is disabled while no filter is set", { size: F.xs, fill: C.grey2 }));
+  // row icon buttons
+  y += 100;
+  rowLabel("Row action icons (36px on desktop, labelled 44px buttons on phone cards)");
+  const b = ICON_BTN_DESKTOP;
+  const iconRow = (x, hover, focus) => {
+    const out = [];
+    [["eye", C.grey2], ["check", C.green1], ["trash", C.grey2]].forEach(([n, c], i) => {
+      const bx = x + i * (b + S[1]);
+      if (hover && i === 1) out.push(circle(bx + b / 2, y + b / 2, b / 2, C.green2));
+      out.push(icon[n](bx + b / 2 - 8, y + b / 2 - 8, c));
+      if (focus && i === 1) out.push(`<circle cx="${bx + b / 2}" cy="${y + b / 2}" r="${b / 2 + 3}" fill="none" stroke="${C.blue1}" stroke-width="2"/>`);
+    });
+    return group(out);
+  };
+  parts.push(iconRow(colX[0], false, false));
+  parts.push(iconRow(colX[1], true, false));
+  parts.push(iconRow(colX[2], false, true));
+  parts.push(text(colX[3], y + b / 2, "— (row actions are never disabled)", { size: F.xs, fill: C.grey3 }));
+  parts.push(text(colX[4], y + b / 2, "Approve #15803d on white = 5.0:1", { size: F.xs, fill: C.grey2 }));
+  // text input
+  y += 92;
+  rowLabel("Text input (44px, 14px text)");
+  parts.push(input(colX[0], y, 220, "Search name, phone or email", { leadIcon: "search" }));
+  parts.push(input(colX[1], y, 220, "Search name, phone or email", { leadIcon: "search", stroke: C.grey3 }));
+  parts.push(input(colX[2], y, 220, "", { leadIcon: "search", value: "priya", stroke: C.blue1, sw: 2 }));
+  parts.push(input(colX[3], y, 220, "Search name, phone or email", { leadIcon: "search", disabled: true }));
+  parts.push(input(colX[4], y, 220, "", { value: "12345", stroke: C.red1 }));
+  parts.push(text(colX[4], y + SIZE.touch + 14, "Phone must contain at least 10 digits", { size: F.xs, fill: C.red1 }));
+  // dropdown
+  y += 104;
+  rowLabel("Dropdown (44px, same as inputs)");
+  parts.push(input(colX[0], y, 220, "Any approval", { trailChevron: true }));
+  parts.push(input(colX[1], y, 220, "Any approval", { trailChevron: true, stroke: C.grey3 }));
+  parts.push(input(colX[2], y, 220, "", { trailChevron: true, value: "Pending approval", stroke: C.blue1, sw: 2 }));
+  parts.push(input(colX[3], y, 220, "Any approval", { trailChevron: true, disabled: true }));
+  parts.push(text(colX[4], y + 22, "Open list: selected item $blue-b3 / $blue-b2", { size: F.xs, fill: C.grey2 }));
+  // table row hover
+  y += 92;
+  rowLabel("Table row");
+  parts.push(rect(colX[0], y, 220, 48, { fill: C.white, stroke: C.grey4 }));
+  parts.push(text(colX[0] + 12, y + 24, "Default row", { size: F.sm }));
+  parts.push(rect(colX[1], y, 220, 48, { fill: C.grey5, stroke: C.grey4 }));
+  parts.push(text(colX[1] + 12, y + 24, "Hover row ($grey-b5)", { size: F.sm }));
+  return { W, H, svg: parts };
 }
 
 // ---- screens ---------------------------------------------------------------------------
@@ -440,7 +653,7 @@ function listScreen(W, state = "filled") {
   const f = filterBar(x, y, w, mode);
   parts.push(f.svg);
   y = f.bottom + S[4];
-  const tb = tableCard(x, y, w, { state, clipped: mode !== "desktop" });
+  const tb = tableCard(x, y, w, { state, mode });
   parts.push(tb.svg);
   const finalH = Math.max(H, tb.bottom + sh.pad);
   return { W, H: finalH, svg: [shell(W, finalH, { sidebar: mode === "desktop" }).svg, ...parts] };
@@ -649,6 +862,7 @@ const ARTBOARDS = [
   ["11-details-375", detailsScreen(375)],
   ["12-login-1440", loginScreen(1440)],
   ["13-login-375", loginScreen(375)],
+  ["14-states", statesScreen()],
 ];
 
 const manifest = [];
@@ -681,7 +895,7 @@ const html = `<!doctype html>
   code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px}
   .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
 </style></head><body>
-<header><h1>Easy Admin — Delivery agents · design board</h1><p>Generated from the token file. Desktop 1440 · tablet 768 · phone 375 · filled / loading / empty / error. Each SVG imports into Figma as an editable frame.</p></header>
+<header><h1>Easy Admin — Delivery agents · design board</h1><p>Generated from the token file. Desktop 1440 · tablet 768 · phone 375 · filled / loading / empty / error · interaction states (14). Table column widths are read from <code>$agent-table-columns</code> in the token file. Each SVG imports into Figma as an editable frame.</p></header>
 <main>
 <section><h2>Artboards (${manifest.length})</h2><p class="note">Click to open the SVG at full size. The same files live in the repo under <code>public/design/</code>; PNG exports under <code>docs/design/</code>.</p>
 <div class="grid">${manifest.map((m) => `<figure><a href="/design/${m.name}.svg"><img src="/design/${m.name}.svg" alt="${m.name}" loading="lazy"></a><figcaption><span>${m.name}</span><span>${m.w} × ${m.h}</span></figcaption></figure>`).join("")}</div></section>

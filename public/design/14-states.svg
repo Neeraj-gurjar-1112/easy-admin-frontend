@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="760" viewBox="0 0 1440 760" font-family="Inter, Arial, sans-serif">
+<title>14-states</title>
+<rect x="0" y="0" width="1440" height="760" rx="0" fill="#f3f5f9"/>
+<text x="48" y="56" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700" fill="#0f172a" text-anchor="start" dominant-baseline="middle">Interaction states</text>
+<text x="48" y="84" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#475569" text-anchor="start" dominant-baseline="middle">Same tokens as the build: hover darkens to $blue-b2 or tints with $grey-b5; keyboard focus = 2px $blue-b1 ring (2px gap on buttons); disabled = $grey-b5 fill, $grey-b4 border, $grey-b3 text.</text>
+<text x="48" y="132" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="600" fill="#64748b" text-anchor="start" letter-spacing="0.5" dominant-baseline="middle">DEFAULT</text>
+<text x="300" y="132" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="600" fill="#64748b" text-anchor="start" letter-spacing="0.5" dominant-baseline="middle">HOVER</text>
+<text x="552" y="132" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="600" fill="#64748b" text-anchor="start" letter-spacing="0.5" dominant-baseline="middle">FOCUS (KEYBOARD)</text>
+<text x="804" y="132" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="600" fill="#64748b" text-anchor="start" letter-spacing="0.5" dominant-baseline="middle">DISABLED</text>
+<text x="1056" y="132" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="600" fill="#64748b" text-anchor="start" letter-spacing="0.5" dominant-baseline="middle">INVALID / NOTE</text>
+<text x="48" y="160" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" fill="#0f172a" text-anchor="start" dominant-baseline="middle">Primary button</text>
+<rect x="48" y="172" width="150" height="44" rx="7" fill="#2563eb" stroke="#2563eb" stroke-width="1"/>
+<line x1="85.5" y1="187" x2="85.5" y2="201" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+<line x1="78.5" y1="194" x2="92.5" y2="194" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+<text x="100.5" y="194.5" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" fill="#ffffff" text-anchor="start" dominant-baseline="middle">Add agent</text>
+<rect x="300" y="172" width="150" height="44" rx="7" fill="#1d4ed8" stroke="#1d4ed8" stroke-width="1"/>
+<line x1="337.5" y1="187" x2="337.5" y2="201" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+<line x1="330.5" y1="194" x2="344.5" y2="194" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+<text x="352.5" y="194.5" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" fill="#ffffff" text-anchor="start" dominant-baseline="middle">Add agent</text>
+<rect x="552" y="172" width="150" height="44" rx="7" fill="#2563eb" stroke="#2563eb" stroke-width="1"/>
+<line x1="589.5" y1="187" x2="589.5" y2="201" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+<line x1="582.5" y1="194" x2="596.5" y2="194" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+<text x="604.5" y="194.5" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" fill="#ffffff" text-anchor="start" dominant-baseline="middle">Add agent</text>
+<rect x="549" y="169" width="156" height="50" rx="10" fill="none" stroke="#2563eb" stroke-width="2"/>
+<rect x="804" y="172" width="150" height="44" rx="7" fill="#f8fafc" stroke="#e3e8ef" stroke-width="1"/>
+<line x1="841.5" y1="187" x2="841.5" y2="201" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
+<line x1="834.5" y1="194" x2="848.5" y2="194" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
+<text x="856.5" y="194.5" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" fill="#64748b" text-anchor="start" dominant-baseline="middle">Add agent</text>
+<text x="1056" y="194" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400" fill="#475569" text-anchor="start" dominant-baseline="middle">White on #2563eb = 5.2:1 · hover #1d4ed8 = 6.7:1</text>
+<text x="48" y="260" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" fill="#0f172a" text-anchor="start" dominant-baseline="middle">Outlined button</text>
+<rect x="48" y="272" width="150" height="44" rx="7" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+<path d="M107.5 295a6 6 0 1 1-2-4.5" fill="none" stroke="#475569" stroke-width="2" stroke-linecap="round"/>
+<polyline points="104.5,288 107.5,291 104.5,294" fill="none" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="115.5" y="294.5" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" fill="#475569" text-anchor="start" dominant-baseline="middle">Reset</text>
+<rect x="300" y="272" width="150" height="44" rx="7" fill="#f8fafc" stroke="#64748b" stroke-width="1"/>
+<path d="M359.5 295a6 6 0 1 1-2-4.5" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/>
+<polyline points="356.5,288 359.5,291 356.5,294" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="367.5" y="294.5" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" fill="#0f172a" text-anchor="start" dominant-baseline="middle">Reset</text>
+<rect x="552" y="272" width="150" height="44" rx="7" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+<path d="M611.5 295a6 6 0 1 1-2-4.5" fill="none" stroke="#475569" stroke-width="2" stroke-linecap="round"/>
+<polyline points="608.5,288 611.5,291 608.5,294" fill="none" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="619.5" y="294.5" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" fill="#475569" text-anchor="start" dominant-baseline="middle">Reset</text>
+<rect x="549" y="269" width="156" height="50" rx="10" fill="none" stroke="#2563eb" stroke-width="2"/>
+<rect x="804" y="272" width="150" height="44" rx="7" fill="#f8fafc" stroke="#e3e8ef" stroke-width="1"/>
+<path d="M863.5 295a6 6 0 1 1-2-4.5" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
+<polyline points="860.5,288 863.5,291 860.5,294" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="871.5" y="294.5" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" fill="#64748b" text-anchor="start" dominant-baseline="middle">Reset</text>
+<text x="1056" y="294" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400" fill="#475569" text-anchor="start" dominant-baseline="middle">Reset is disabled while no filter is set</text>
+<text x="48" y="360" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" fill="#0f172a" text-anchor="start" dominant-baseline="middle">Row action icons (36px on desktop, labelled 44px buttons on phone cards)</text>
+<ellipse cx="66" cy="390" rx="8" ry="5" fill="none" stroke="#475569" stroke-width="1.6"/>
+<circle cx="66" cy="390" r="2.4" fill="#475569"/>
+<polyline points="100,390 104,394 112,385" fill="none" stroke="#15803d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="141" y="386" width="10" height="11" rx="1.5" fill="none" stroke="#475569" stroke-width="1.6"/>
+<line x1="139" y1="386" x2="153" y2="386" stroke="#475569" stroke-width="1.6" stroke-linecap="round"/>
+<line x1="144" y1="383" x2="148" y2="383" stroke="#475569" stroke-width="1.6" stroke-linecap="round"/>
+<ellipse cx="318" cy="390" rx="8" ry="5" fill="none" stroke="#475569" stroke-width="1.6"/>
+<circle cx="318" cy="390" r="2.4" fill="#475569"/>
+<circle cx="358" cy="390" r="18" fill="#dcfce7"/>
+<polyline points="352,390 356,394 364,385" fill="none" stroke="#15803d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="393" y="386" width="10" height="11" rx="1.5" fill="none" stroke="#475569" stroke-width="1.6"/>
+<line x1="391" y1="386" x2="405" y2="386" stroke="#475569" stroke-width="1.6" stroke-linecap="round"/>
+<line x1="396" y1="383" x2="400" y2="383" stroke="#475569" stroke-width="1.6" stroke-linecap="round"/>
+<ellipse cx="570" cy="390" rx="8" ry="5" fill="none" stroke="#475569" stroke-width="1.6"/>
+<circle cx="570" cy="390" r="2.4" fill="#475569"/>
+<polyline points="604,390 608,394 616,385" fill="none" stroke="#15803d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="610" cy="390" r="21" fill="none" stroke="#2563eb" stroke-width="2"/>
+<rect x="645" y="386" width="10" height="11" rx="1.5" fill="none" stroke="#475569" stroke-width="1.6"/>
+<line x1="643" y1="386" x2="657" y2="386" stroke="#475569" stroke-width="1.6" stroke-linecap="round"/>
+<line x1="648" y1="383" x2="652" y2="383" stroke="#475569" stroke-width="1.6" stroke-linecap="round"/>
+<text x="804" y="390" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400" fill="#64748b" text-anchor="start" dominant-baseline="middle">— (row actions are never disabled)</text>
+<text x="1056" y="390" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400" fill="#475569" text-anchor="start" dominant-baseline="middle">Approve #15803d on white = 5.0:1</text>
+<text x="48" y="452" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" fill="#0f172a" text-anchor="start" dominant-baseline="middle">Text input (44px, 14px text)</text>
+<rect x="48" y="464" width="220" height="44" rx="7" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+<circle cx="67" cy="485" r="5.5" fill="none" stroke="#64748b"/>
+<line x1="71" y1="489" x2="76" y2="494" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
+<text x="84" y="486.5" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#64748b" text-anchor="start" dominant-baseline="middle">Search name, phone or email</text>
+<rect x="300" y="464" width="220" height="44" rx="7" fill="#ffffff" stroke="#64748b" stroke-width="1"/>
+<circle cx="319" cy="485" r="5.5" fill="none" stroke="#64748b"/>
+<line x1="323" y1="489" x2="328" y2="494" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
+<text x="336" y="486.5" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#64748b" text-anchor="start" dominant-baseline="middle">Search name, phone or email</text>
+<rect x="552" y="464" width="220" height="44" rx="7" fill="#ffffff" stroke="#2563eb" stroke-width="2"/>
+<circle cx="571" cy="485" r="5.5" fill="none" stroke="#64748b"/>
+<line x1="575" y1="489" x2="580" y2="494" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
+<text x="588" y="486.5" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#0f172a" text-anchor="start" dominant-baseline="middle">priya</text>
+<rect x="804" y="464" width="220" height="44" rx="7" fill="#f8fafc" stroke="#e3e8ef" stroke-width="1"/>
+<circle cx="823" cy="485" r="5.5" fill="none" stroke="#64748b"/>
+<line x1="827" y1="489" x2="832" y2="494" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
+<text x="840" y="486.5" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#64748b" text-anchor="start" dominant-baseline="middle">Search name, phone or email</text>
+<rect x="1056" y="464" width="220" height="44" rx="7" fill="#ffffff" stroke="#b91c1c" stroke-width="1"/>
+<text x="1068" y="486.5" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#0f172a" text-anchor="start" dominant-baseline="middle">12345</text>
+<text x="1056" y="522" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400" fill="#b91c1c" text-anchor="start" dominant-baseline="middle">Phone must contain at least 10 digits</text>
+<text x="48" y="556" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" fill="#0f172a" text-anchor="start" dominant-baseline="middle">Dropdown (44px, same as inputs)</text>
+<rect x="48" y="568" width="220" height="44" rx="7" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+<text x="60" y="590.5" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#64748b" text-anchor="start" dominant-baseline="middle">Any approval</text>
+<polyline points="244,587 250,593 256,587" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="300" y="568" width="220" height="44" rx="7" fill="#ffffff" stroke="#64748b" stroke-width="1"/>
+<text x="312" y="590.5" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#64748b" text-anchor="start" dominant-baseline="middle">Any approval</text>
+<polyline points="496,587 502,593 508,587" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="552" y="568" width="220" height="44" rx="7" fill="#ffffff" stroke="#2563eb" stroke-width="2"/>
+<text x="564" y="590.5" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#0f172a" text-anchor="start" dominant-baseline="middle">Pending approval</text>
+<polyline points="748,587 754,593 760,587" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="804" y="568" width="220" height="44" rx="7" fill="#f8fafc" stroke="#e3e8ef" stroke-width="1"/>
+<text x="816" y="590.5" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#64748b" text-anchor="start" dominant-baseline="middle">Any approval</text>
+<polyline points="1000,587 1006,593 1012,587" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="1056" y="590" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400" fill="#475569" text-anchor="start" dominant-baseline="middle">Open list: selected item $blue-b3 / $blue-b2</text>
+<text x="48" y="648" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" fill="#0f172a" text-anchor="start" dominant-baseline="middle">Table row</text>
+<rect x="48" y="660" width="220" height="48" rx="0" fill="#ffffff" stroke="#e3e8ef" stroke-width="1"/>
+<text x="60" y="684" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#0f172a" text-anchor="start" dominant-baseline="middle">Default row</text>
+<rect x="300" y="660" width="220" height="48" rx="0" fill="#f8fafc" stroke="#e3e8ef" stroke-width="1"/>
+<text x="312" y="684" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="400" fill="#0f172a" text-anchor="start" dominant-baseline="middle">Hover row ($grey-b5)</text>
+</svg>
