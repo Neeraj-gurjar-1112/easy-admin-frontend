@@ -9,7 +9,7 @@ Format: WM | Report (10 parts from training Step 8). Written as a hand-over to Q
 | Frontend repo / branch | https://github.com/Neeraj-gurjar-1112/easy-admin-frontend · `main` · **code under test: commit `26fdf72`** (the deployed build is the commit right after it on `main`, which adds only this report, the test cases, screenshots and the HTML reports) |
 | Backend repo / branch | https://github.com/Neeraj-gurjar-1112/Easy-Backend-v2 · `master` · deployed commit `1d39999` (delivery-agents module, seed, tests, render.yaml) |
 | Demo | Frontend: https://easy-admin-frontend.vercel.app (real API, login `admin@example.com` / `QaDemo@2026`) · Backend: https://easy-backend-v2.onrender.com/api/admin (Render free, in-memory database reseeded on every boot; first request after idle can take ~1 min) |
-| Date | 2026-10-08 |
+| Date | 2026-10-09 (build and Playwright runs) · report text revised 2026-10-12 after the QA review: parts 5 and 6 now name the hosted account and the reseed-on-boot behaviour |
 
 ## 2. TL tasks covered
 
@@ -46,12 +46,17 @@ fields and hashes a new password correctly.
 
 | Role | Account | Where |
 |---|---|---|
-| Admin (only role in Easy's admin API) | `admin@example.com` — password = `SEED_ADMIN_PASSWORD` on the host, or the local default inside `Easy-Backend-v2/lib/seed/deliveryAgents.js` | Created by the seed (script, or on boot with `SEED_ON_BOOT=1`) |
-| Delivery agents | 32 seeded agents (`rahul.verma@example.com` …) — no passwords set | Seed |
+| Admin — hosted demo (only role in Easy's admin API) | `admin@example.com` / `QaDemo@2026` on https://easy-backend-v2.onrender.com/api/admin — demo-only account | Seeded on every boot (`SEED_ON_BOOT=1` in `render.yaml`); the in-memory database is reseeded whenever the instance restarts |
+| Admin — local run | `admin@example.com` / `Admin@123` (seed default in `Easy-Backend-v2/lib/seed/deliveryAgents.js`; `SEED_ADMIN_PASSWORD` overrides it) | `node scripts/seed-delivery-agents.js` |
+| Delivery agents | 32 seeded agents (`rahul.verma@example.com` …) — no passwords set, no login in this admin app | Seed (hosted: on boot · local: script) |
 
-No real passwords in this report. Change `SEED_ADMIN_PASSWORD` before seeding any shared environment.
+Both passwords are demo-only, in-memory data. Change `SEED_ADMIN_PASSWORD` before seeding any shared environment.
 
 ## 6. Data QA must prepare first
+
+**Hosted demo — nothing to prepare.** https://easy-admin-frontend.vercel.app runs on https://easy-backend-v2.onrender.com/api/admin, whose in-memory database is reseeded on every boot with the same 32 agents + admin (`admin@example.com` / `QaDemo@2026`). Anything created, edited or deleted during a review disappears on the next restart, so there is no data to protect; the first request after ~15 min idle takes up to a minute. Playwright against the demo: `PLAYWRIGHT_BASE_URL=https://easy-admin-frontend.vercel.app` and `E2E_ADMIN_PASSWORD=QaDemo@2026`.
+
+**Local run:**
 
 ```bash
 # Backend (Node 20+, MongoDB on localhost:27017 — or USE_MEMORY_DB=1 for a self-contained in-memory database)
@@ -64,11 +69,11 @@ npm run dev                                # http://localhost:8080
 cd easy-admin-frontend
 npm install
 cp .env.local.example .env.local           # already set to the real API (NEXT_PUBLIC_USE_MOCK=0)
-$env:E2E_ADMIN_PASSWORD="<seed password>"  # for Playwright only
+$env:E2E_ADMIN_PASSWORD="Admin@123"         # for Playwright only (the seed default, or your SEED_ADMIN_PASSWORD)
 npm run dev                                # http://localhost:3000
 ```
 
-Expected starting state: 32 agents · 5 pending · 18 online · 7 busy · 7 offline · average rating 4.5.
+Expected starting state (hosted after a boot, or local after the seed): 32 agents · 5 pending · 18 online · 7 busy · 7 offline · average rating 4.5.
 Mutation tests create and delete their own agent (`e2e.<stamp>@example.com`). They may run against the hosted demo API (in-memory database, reseeded on every restart) — never against a real production server.
 
 ## 7. What to test (numbered)

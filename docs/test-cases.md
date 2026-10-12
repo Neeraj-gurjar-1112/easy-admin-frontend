@@ -4,6 +4,8 @@ Format: WM QA Template ("Verify that …" statements with ID, type P = positive 
 Areas follow the training page Step 7 table: page opens · main flow · validation · list · roles · states · screen sizes.
 Automated coverage: `e2e/delivery-agents.spec.ts` (read-only), `e2e/delivery-agents.mutation.spec.ts` (create / edit / delete), `e2e/responsive.spec.ts`.
 
+**Count:** 54 cases — 37 positive (P) / 17 negative (N). The code review's 51 (34 / 17) was counted at commit `8786eae`; DA-065, DA-066 and DA-067 (table fits at 1440, actions pinned 768–1439, sort from the phone cards) were added in `c0b6c58` after the design review.
+
 **Common precondition:** Easy-Backend-v2 running on :8080 with `node scripts/seed-delivery-agents.js` applied (32 agents, admin `admin@example.com`); frontend on :3000 with `NEXT_PUBLIC_USE_MOCK=0`.
 
 | ID | Area | Type | Test case | Precondition | Steps | Expected result | Auto |
